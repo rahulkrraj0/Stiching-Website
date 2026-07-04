@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+
+{% block title %}{{ p.name }} — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header wrap">
+  <div class="breadcrumb">
+    <a href="{{ url_for('home') }}">Home</a> /
+    <a href="{{ url_for('category', slug=p.category) }}">{{ p.category.replace('-', ' ')|title }}</a> /
+    {{ p.name }}
+  </div>
+</div>
+
+<section style="padding-top:16px;">
+  <div class="wrap pd-grid">
+    <div class="pd-thumb" style="background:{{ p.color }}18;">
+      {% if p.image %}
+        <img src="{{ url_for('static', filename='img/' + p.image) }}" alt="{{ p.name }} — {{ p.fabric }}" loading="lazy">
+      {% else %}
+        <svg viewBox="0 0 130 130" style="color:{{ p.color }}; stroke:{{ p.color }};" aria-hidden="true">
+          {{ m.icon_path(p.icon) }}
+        </svg>
+      {% endif %}
+    </div>
+
+    <div class="pd-info">
+      <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+      <h1>{{ p.name }}</h1>
+      <p class="desc">{{ p.desc }}</p>
+
+      <div class="pd-meta">
+        <span>Fabric: {{ p.fabric }}</span>
+        {% if p.rank %}<span>Ranked #{{ p.rank }} this week</span>{% endif %}
+        {% for t in p.tags %}
+          <span>{{ t.replace('_', ' ')|title }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="price-note">
+        Pricing depends on fabric, fit, and finishing details — we'll confirm the exact cost during your free home measurement visit.
+      </div>
+
+      <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <a href="#" class="btn btn-filled pink ripple-surface enquire-btn">Enquire about this design</a>
+        <a href="{{ url_for('home') }}#order" class="btn btn-outline ripple-surface">Book a measurement</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if related %}
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">You may also like</div>
+        <h2>More from {{ p.category.replace('-', ' ')|title }}</h2>
+      </div>
+    </div>
+    <div class="product-grid">
+      {% for r in related %}
+      <a href="{{ url_for('product', product_id=r.id) }}" class="product-card ripple-surface">
+        {{ m.product_thumb(r) }}
+        <div class="product-info">
+          <div class="cat">{{ r.category.replace('-', ' ') }}</div>
+          <h3>{{ r.name }}</h3>
+          <span class="fabric">{{ r.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

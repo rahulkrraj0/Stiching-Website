@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+
+{% block title %}{{ label }} in {{ business.city }} — Doorstep Tailoring | {{ site_name }}{% endblock %}
+{% block meta_description %}Custom {{ label|lower }} stitching in {{ business.city }} with free home measurement visits. Serving {{ business.areas_served[:4]|join(', ') }} and more.{% endblock %}
+
+{% block schema %}
+{{ super() }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for q, a in faqs %}
+    {
+      "@type": "Question",
+      "name": {{ q|tojson }},
+      "acceptedAnswer": { "@type": "Answer", "text": {{ a|tojson }} }
+    }{{ "," if not loop.last }}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="page-header wrap">
+  <div class="breadcrumb">
+    <a href="{{ url_for('home') }}">Home</a> /
+    <a href="{{ url_for('gurugram_hub') }}">Gurugram</a> /
+    {{ label }}
+  </div>
+  <h1>{{ label }} in {{ business.city }}</h1>
+</div>
+
+<section style="padding-top:8px;">
+  <div class="wrap">
+    <p class="local-intro">
+      Free home measurement visits for {{ label|lower }} across {{ business.city }}. We bring fabric swatches
+      to you, confirm fit and finishing at your door, and stitch every piece to your exact measurements —
+      no shop visit needed.
+    </p>
+    <div class="areas-served">
+      {% for area in business.areas_served %}
+        <span class="chip">{{ area }}</span>
+      {% endfor %}
+    </div>
+    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
+      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a free measurement visit</a>
+      <a href="tel:{{ business.phone_tel }}" class="btn btn-outline ripple-surface">Call {{ business.phone_display }}</a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    {% if items %}
+    <div class="section-head">
+      <div>
+        <div class="section-tag">{{ label }} collection</div>
+        <h2>{{ label }} designs available in {{ business.city }}</h2>
+      </div>
+      <a href="{{ url_for('category', slug=slug) }}" class="see-all">See full collection →</a>
+    </div>
+    <div class="product-grid">
+      {% for p in items[:8] %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="product-card ripple-surface">
+        {{ m.product_thumb(p) }}
+        <div class="product-info">
+          <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+          <h3>{{ p.name }}</h3>
+          <span class="fabric">{{ p.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Common questions</div>
+        <h2>{{ label }} in {{ business.city }} — FAQs</h2>
+      </div>
+    </div>
+    <div class="faq-list">
+      {% for q, a in faqs %}
+      <details class="faq-item">
+        <summary>{{ q }}</summary>
+        <p>{{ a }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

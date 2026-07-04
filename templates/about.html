@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}About — {{ site_name }} | Doorstep Tailoring in {{ business.city }}{% endblock %}
+{% block meta_description %}Learn how {{ site_name }} brings measurement, fitting, and delivery to your door across {{ business.city }}.{% endblock %}
+
+{% block content %}
+<div class="page-header wrap">
+  <div class="breadcrumb"><a href="{{ url_for('home') }}">Home</a> / About</div>
+  <h1>About {{ site_name }}</h1>
+</div>
+
+<section>
+  <div class="wrap" style="max-width:760px;">
+    <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
+      {{ site_name }} is a doorstep tailoring studio serving {{ business.city }}, {{ business.state }}. We bring
+      the measuring tape to you, stitch every design to your exact fit, and deliver it back to your door —
+      no shop visit required.
+    </p>
+    <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
+      Every design on this site starts the same way: a free home measurement visit, a fabric choice
+      from our library or your own material, and one trial fitting for anything structured. Pricing is
+      confirmed during that visit, based on fabric and finishing.
+    </p>
+    <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-bottom:32px;">
+      We currently cover {{ business.areas_served[:6]|join(', ') }} and other localities across
+      {{ business.city }} — see the full list on our <a href="{{ url_for('gurugram_hub') }}">Gurugram service areas</a> page.
+    </p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a measurement</a>
+      <a href="tel:{{ business.phone_tel }}" class="btn btn-outline ripple-surface">Call {{ business.phone_display }}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

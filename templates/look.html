@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+
+{% block title %}Stitch the Look — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header wrap">
+  <div class="breadcrumb"><a href="{{ url_for('home') }}">Home</a> / Stitch the Look</div>
+  <h1>Stitch the Look!</h1>
+  <p style="color:var(--ink-soft); margin-top:8px; max-width:60ch;">Full outfit combinations styled by our design team — pick a look, and we'll stitch every piece to your measurements.</p>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="video-frame" style="max-width:280px; margin-bottom:44px;">
+      <video controls id="brandVideo2">
+        <source src="{{ url_for('static', filename='video/stitch-the-look.mp4') }}" type="video/mp4">
+      </video>
+      <div class="video-placeholder" id="videoPlaceholder2">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/><path d="M10 8l6 4-6 4V8z" fill="white"/></svg>
+        <span>Add your reel to<br><b>static/video/stitch-the-look.mp4</b></span>
+      </div>
+    </div>
+
+    {% if items %}
+    <div class="product-grid">
+      {% for p in items %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="look-card ripple-surface">
+        <div class="look-thumb" style="background:{{ p.color }}22;">
+          <svg viewBox="0 0 130 130" style="color:{{ p.color }}; stroke:{{ p.color }};">
+            {{ m.icon_path(p.icon) }}
+          </svg>
+          <span class="product-badge">Look</span>
+        </div>
+        <div class="look-info">
+          <h3>{{ p.name }}</h3>
+          <p class="look-tagline">{{ p.desc }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h1>New looks coming soon</h1>
+      <p>Our stylists are curating the next set of outfit combinations.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Wire up the second video element on this page to the same fallback logic
+  document.addEventListener('DOMContentLoaded', function () {
+    const video = document.getElementById('brandVideo2');
+    const placeholder = document.getElementById('videoPlaceholder2');
+    if (video && placeholder) {
+      video.addEventListener('error', () => {
+        video.style.display = 'none';
+        placeholder.style.display = 'flex';
+      }, true);
+      video.addEventListener('loadedmetadata', () => {
+        placeholder.style.display = 'none';
+      });
+      if (video.readyState === 0) placeholder.style.display = 'flex';
+    }
+  });
+</script>
+{% endblock %}

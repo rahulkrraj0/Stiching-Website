@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}Admin — {{ site_name }}{% endblock %}
+{% block content %}
+<div class="admin-page">
+  <div class="wrap admin-page-wrap">
+    <div class="admin-header">
+      <div>
+        <span class="section-tag">Admin dashboard</span>
+        <h1>Manage products, images, and site offers</h1>
+        <p>Upload product images, maintain optional pricing, and keep the ticker messages fresh.</p>
+      </div>
+      <div class="admin-summary">
+        <div><strong>{{ products|length }}</strong><span>Products</span></div>
+        <div><strong>{{ offers|length }}</strong><span>Offers</span></div>
+        <form method="post" action="{{ url_for('admin_logout') }}" style="align-self:center;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn btn-outline btn-sm">Log out</button>
+        </form>
+      </div>
+    </div>
+
+    <section id="admin-products" class="admin-section">
+      <div class="section-head">
+        <h2>Products</h2>
+        <p>Use the form below to add or edit products, including optional price, discount and image.</p>
+      </div>
+      <div class="admin-grid">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>{% if edit_product %}Edit product{% else %}Add product{% endif %}</h3>
+            <p class="admin-card-copy">Choose a clear title, category and upload a product image to improve site visual appeal.</p>
+          </div>
+          <form action="{{ url_for('admin_update_product') if edit_product else url_for('admin_add_product') }}" method="post" enctype="multipart/form-data" class="admin-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if edit_product %}
+              <input type="hidden" name="id" value="{{ edit_product.id }}" />
+            {% endif %}
+            <div class="form-grid">
+              <input name="name" placeholder="Name" value="{{ edit_product.name if edit_product else '' }}" required />
+              <select name="category" required>
+                <option value="">Select category</option>
+                {% for slug, label in existing_categories.items() %}
+                  <option value="{{ slug }}" {% if edit_product and slug == edit_product.category %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+              <input name="fabric" placeholder="Fabric" value="{{ edit_product.fabric if edit_product else '' }}" />
+              <input name="hash_number" placeholder="Hash number" value="{{ edit_product.hash_number if edit_product else '' }}" />
+              <input type="file" name="image" accept="image/*" />
+              {% if edit_product and edit_product.image %}
+                <div class="small-note">Current image: <a href="{{ url_for('static', filename='img/' + edit_product.image) }}" target="_blank">{{ edit_product.image }}</a></div>
+              {% endif %}
+              <input name="tags" list="tagSuggestions" placeholder="tags,comma,separated" value="{{ edit_product.tags | join(',') if edit_product else '' }}" />
+              <datalist id="tagSuggestions">
+                {% for tag in tag_suggestions %}
+                  <option value="{{ tag }}"></option>
+                {% endfor %}
+              </datalist>
+              <input name="price" placeholder="price (optional)" value="{{ edit_product.price if edit_product else '' }}" />
+              <input name="discount" placeholder="discount % (optional)" value="{{ edit_product.discount if edit_product else '' }}" />
+              <input name="desc" placeholder="Short description" value="{{ edit_product.desc if edit_product else '' }}" />
+            </div>
+            <div class="inline-actions">
+              <button class="btn btn-filled" type="submit">{% if edit_product %}Save changes{% else %}Add product{% endif %}</button>
+              {% if edit_product %}
+                <a class="btn btn-outline" href="{{ url_for('admin_dashboard') }}#admin-products">Cancel</a>
+              {% endif %}
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Product catalog</h3>
+            <p class="admin-card-copy">Edit or remove products quickly from this list.</p>
+          </div>
+          <div class="table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Discount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in products %}
+                  <tr>
+                    <td>{{ p.id }}</td>
+                    <td class="admin-thumb-cell">
+                      {% if p.image %}
+                        <img src="{{ url_for('static', filename='img/' + p.image) }}" alt="{{ p.name }}" />
+                      {% else %}
+                        <span class="admin-thumb-placeholder">No image</span>
+                      {% endif %}
+                    </td>
+                    <td>{{ p.name if p.name is defined else p.title if p.title is defined else '—' }}</td>
+                    <td>{{ p.category }}</td>
+                    <td>{{ p.price if p.price is defined else '-' }}</td>
+                    <td>{{ p.discount if p.discount is defined else '-' }}</td>
+                    <td class="admin-row-actions">
+                      <a class="btn btn-text btn-sm" href="{{ url_for('admin_edit_product', product_id=p.id) }}">Edit</a>
+                      <form action="{{ url_for('admin_delete_product', product_id=p.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button class="btn btn-outline btn-sm" type="submit">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="admin-categories" class="admin-section">
+      <div class="section-head">
+        <h2>Categories</h2>
+        <p>Add a new category and keep the dropdown list consistent across the site.</p>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3>Add new category</h3>
+          <p class="admin-card-copy">Enter a label for the category and it will become available in the product form.</p>
+        </div>
+        <form action="{{ url_for('admin_add_category') }}" method="post" class="admin-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="form-grid">
+            <input name="label" placeholder="Category label" required />
+          </div>
+          <div class="inline-actions">
+            <button class="btn btn-filled" type="submit">Add category</button>
+          </div>
+        </form>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3>Existing categories</h3>
+          <p class="admin-card-copy">The category slug is generated automatically from the label.</p>
+        </div>
+        <ul class="admin-offer-list">
+          {% for slug, label in existing_categories.items() %}
+            <li>
+              <span>{{ label }} <small class="admin-muted">({{ slug }})</small></span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
+
+    <section id="admin-offers" class="admin-section">
+      <div class="section-head">
+        <h2>Offers / Ticker</h2>
+        <p>Update the rolling news strip with the latest promotions.</p>
+      </div>
+      <div class="admin-grid admin-grid--offers">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Add ticker message</h3>
+            <p class="admin-card-copy">This message appears in the ticker at the top of the site.</p>
+          </div>
+          <form action="{{ url_for('admin_add_offer') }}" method="post" class="admin-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-grid">
+              <input name="text" placeholder="Offer text (shown in ticker)" />
+            </div>
+            <div class="inline-actions">
+              <button class="btn btn-filled" type="submit">Add offer</button>
+            </div>
+          </form>
+          <div class="admin-card-header" style="margin-top:24px;">
+            <h3>Homepage hero</h3>
+            <p class="admin-card-copy">Upload a hero image and set headline text for the homepage.</p>
+          </div>
+          <form action="{{ url_for('admin_update_hero') }}" method="post" enctype="multipart/form-data" class="admin-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-grid">
+              <input name="headline" placeholder="Hero headline" value="{{ hero.headline if hero else '' }}" />
+              <input name="subheadline" placeholder="Hero subheadline" value="{{ hero.subheadline if hero else '' }}" />
+              <input type="file" name="hero_image" accept="image/*" />
+            </div>
+            <div class="inline-actions">
+              <button class="btn btn-filled" type="submit">Save hero</button>
+            </div>
+          </form>
+          {% if hero.image %}
+          <div class="small-note" style="margin-top:12px;">Current hero image: <a href="{{ url_for('static', filename='img/' + hero.image) }}" target="_blank">{{ hero.image }}</a></div>
+          {% endif %}
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Active ticker messages</h3>
+            <p class="admin-card-copy">Remove outdated messages and keep the banner fresh.</p>
+          </div>
+          <ul class="admin-offer-list">
+            {% for m in offers %}
+              <li>
+                <span>{{ loop.index0 + 1 }} — {{ m.text }}</span>
+                <form action="{{ url_for('admin_delete_offer', index=loop.index0) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-outline btn-sm" type="submit">Delete</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

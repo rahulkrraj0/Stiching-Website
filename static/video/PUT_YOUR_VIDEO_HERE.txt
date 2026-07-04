@@ -1,0 +1,10 @@
+Drop your "Stitch the Look" video file in this folder and name it:
+
+    stitch-the-look.mp4
+
+It will automatically appear on:
+  - the homepage video section
+  - the /stitch-the-look page
+
+If no video file is present, a styled placeholder is shown instead —
+so the site works fine either way.

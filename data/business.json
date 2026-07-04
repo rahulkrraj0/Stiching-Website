@@ -1,0 +1,29 @@
+{
+  "name": "SilaiGhar",
+  "legal_name": "SilaiGhar Tailoring Studio",
+  "tagline": "Doorstep Tailoring & Custom Designs in Gurugram",
+  "description": "SilaiGhar is a doorstep tailoring studio serving Gurugram — free home measurement visits, custom stitching, and doorstep delivery across the city.",
+  "phone_display": "+91 98XXX XXXXX",
+  "phone_tel": "+9198XXXXXXXX",
+  "whatsapp_number": "9198XXXXXXXX",
+  "email": "hello@silaighar.in",
+  "address_line1": "Shop/Studio address line 1",
+  "address_line2": "Near landmark, Sector XX",
+  "city": "Gurugram",
+  "state": "Haryana",
+  "pincode": "122001",
+  "country": "India",
+  "latitude": 28.4595,
+  "longitude": 77.0266,
+  "maps_url": "https://maps.google.com/?q=Gurugram+Haryana",
+  "hours_display": "Mon – Sun, 10:00 AM – 8:00 PM",
+  "opening_hours_schema": ["Mo-Su 10:00-20:00"],
+  "instagram_url": "",
+  "facebook_url": "",
+  "areas_served": [
+    "DLF Phase 1", "DLF Phase 2", "DLF Phase 3", "DLF Phase 4", "DLF Phase 5",
+    "Sushant Lok", "Golf Course Road", "Golf Course Extension Road",
+    "Sohna Road", "MG Road", "Cyber City", "Palam Vihar", "South City",
+    "Sector 14", "Sector 29", "Sector 56", "Nirvana Country"
+  ]
+}

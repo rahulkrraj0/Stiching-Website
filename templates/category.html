@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+
+{% block title %}{{ label }} — {{ site_name }}{% endblock %}
+{% block meta_description %}{{ label }} designs, custom-stitched to your measurements with free doorstep visits across {{ business.city }}.{% endblock %}
+
+{% block content %}
+<div class="page-header wrap">
+  <div class="breadcrumb"><a href="{{ url_for('home') }}">Home</a> / {{ label }}</div>
+  <h1>{{ label }}</h1>
+  <p style="color:var(--ink-soft); margin-top:8px;">{{ items|length }} design{{ 's' if items|length != 1 else '' }} in this collection.
+    {% if slug in nav_categories %}Looking for {{ label }} near you? See <a href="{{ url_for('gurugram_category', slug=slug) }}">{{ label }} in {{ business.city }}</a>.{% endif %}
+  </p>
+</div>
+
+<section>
+  <div class="wrap">
+    {% if items %}
+    <div class="product-grid">
+      {% for p in items %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="product-card ripple-surface">
+        <div style="position:relative;">
+          {{ m.product_thumb(p) }}
+          {% if p.rank %}<span class="product-badge rank mono">#{{ p.rank }}</span>{% endif %}
+        </div>
+        <div class="product-info">
+          <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+          <h3>{{ p.name }}</h3>
+          <span class="fabric">{{ p.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <h1>Nothing here yet</h1>
+      <p>Check back soon — new designs are added every week.</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

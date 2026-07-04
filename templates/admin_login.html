@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Admin login — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="wrap auth-shell">
+  <div class="auth-card">
+    <h1>Admin login</h1>
+    <p class="sub">Sign in to manage products, categories, and offers.</p>
+    {% if error %}<div class="auth-error">{{ error }}</div>{% endif %}
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="auth-field">
+        <label for="username">Username</label>
+        <input id="username" name="username" autocomplete="username" required>
+      </div>
+      <div class="auth-field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-filled pink ripple-surface" style="width:100%; justify-content:center; margin-top:6px;">Sign in</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

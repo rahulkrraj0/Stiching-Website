@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+{% import "_macros.html" as m %}
+
+{% block title %}{{ site_name }} — Custom Tailoring &amp; Top Designs{% endblock %}
+
+{% block content %}
+
+<section class="hero" {% if hero.image %}style="background-image:url('{{ url_for('static', filename='img/' + hero.image) }}'); background-size:cover; background-position:center;"{% endif %}>
+  <div class="hero-overlay"></div>
+  <div class="wrap" style="position:relative; z-index:1;">
+    <div class="section-tag">{{ hero.headline and 'Featured collection' or business.city + ' · 30+ designs · new drops every week' }}</div>
+    <h1 style="font-size:2.9rem; max-width:16ch; line-height:1.08; margin-bottom:16px;">
+      {% if hero.headline %}
+        {{ hero.headline }}
+      {% else %}
+        Trending designs, stitched to <span style="background:linear-gradient(90deg, var(--purple), var(--pink)); -webkit-background-clip:text; background-clip:text; color:transparent;">your</span> exact fit — in {{ business.city }}.
+      {% endif %}
+    </h1>
+    <p style="color:var(--ink-soft); font-size:1.05rem; max-width:52ch; margin-bottom:26px;">
+      {{ hero.subheadline or "Doorstep tailoring across " + business.city + " — browse our top categories, this week's bestsellers, and curated \"Stitch the Look\" outfit sets, then book a free home measurement." }}
+    </p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+      <a href="#top-categories" class="btn btn-filled pink ripple-surface">Shop top categories</a>
+      <a href="#stitch-the-look" class="btn btn-outline ripple-surface">Stitch the Look</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TRENDING ===================== -->
+<section id="trending">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Hot right now</div>
+        <h2>Trending</h2>
+        <p>What everyone's booking a measurement for this week.</p>
+      </div>
+      <div class="section-head-actions">
+        <a href="{{ url_for('trending_page') }}" class="see-all">See all trending →</a>
+        <div class="slider-controls">
+          <button type="button" class="slider-btn prev" data-target="trending-row" aria-label="Scroll trending left">‹</button>
+          <button type="button" class="slider-btn next" data-target="trending-row" aria-label="Scroll trending right">›</button>
+        </div>
+      </div>
+    </div>
+    <div class="product-row" id="trending-row">
+      {% for p in trending %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="product-card ripple-surface">
+        {{ m.product_thumb(p) }}
+        <div class="product-info">
+          <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+          <h3>{{ p.name }}</h3>
+          <span class="fabric">{{ p.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TOP 10 ===================== -->
+<section id="top10" style="background:linear-gradient(180deg, #F1EBFF 0%, var(--bg) 100%);">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Ranked this week</div>
+        <h2>Top 10</h2>
+        <p>Our ten most-booked designs, ranked by demand.</p>
+      </div>
+    </div>
+    <div class="product-grid">
+      {% for p in top10 %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="product-card ripple-surface">
+        <div style="position:relative;">
+          {{ m.product_thumb(p) }}
+          <span class="product-badge rank mono">#{{ p.rank }}</span>
+        </div>
+        <div class="product-info">
+          <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+          <h3>{{ p.name }}</h3>
+          <span class="fabric">{{ p.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STITCH THE LOOK ===================== -->
+<section id="stitch-the-look">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Curated outfits</div>
+        <h2>Stitch the Look!</h2>
+        <p>Full outfit combinations, styled and ready to recreate in your size.</p>
+      </div>
+      <a href="{{ url_for('stitch_the_look_page') }}" class="see-all">See all looks →</a>
+    </div>
+    <div class="product-grid">
+      {% for p in stitch_the_look %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="look-card ripple-surface">
+        <div class="look-thumb" style="background:{{ p.color }}22;">
+          {% if p.image %}
+            <img src="{{ url_for('static', filename='img/' + p.image) }}" alt="{{ p.name }}" loading="lazy">
+          {% else %}
+            <svg viewBox="0 0 130 130" style="color:{{ p.color }}; stroke:{{ p.color }};" aria-hidden="true">
+              {{ m.icon_path(p.icon) }}
+            </svg>
+          {% endif %}
+          <span class="product-badge">Look</span>
+        </div>
+        <div class="look-info">
+          <h3>{{ p.name }}</h3>
+          <p class="look-tagline">{{ p.desc }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== VIDEO / REEL ===================== -->
+<section id="video">
+  <div class="video-section">
+    <div class="wrap video-grid">
+      <div>
+        <div class="section-tag" style="background:rgba(255,255,255,0.18); color:#fff;">See it in motion</div>
+        <h2>Watch our latest "Stitch the Look" reel</h2>
+        <p>A quick look at how our designs come together — from fabric to final fitting. Drop your video file into <code class="mono" style="background:rgba(0,0,0,0.15); padding:2px 6px; border-radius:6px;">static/video/</code> and update the source below.</p>
+        <a href="{{ url_for('stitch_the_look_page') }}" class="btn btn-filled ripple-surface" style="background:#fff; color:var(--purple-dark);">Explore the looks</a>
+      </div>
+      <div class="video-frame">
+        <video controls poster="" id="brandVideo">
+          <source src="{{ url_for('static', filename='video/stitch-the-look.mp4') }}" type="video/mp4">
+        </video>
+        <div class="video-placeholder" id="videoPlaceholder">
+          <svg width="42" height="42" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="white" stroke-width="1.5"/><path d="M10 8l6 4-6 4V8z" fill="white"/></svg>
+          <span>Your video goes here — add<br><b>static/video/stitch-the-look.mp4</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BESTSELLERS ===================== -->
+<section id="bestsellers">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Customer favorites</div>
+        <h2>Bestsellers</h2>
+        <p>The designs our customers keep coming back for.</p>
+      </div>
+      <a href="{{ url_for('bestsellers_page') }}" class="see-all">See all bestsellers →</a>
+    </div>
+    <div class="product-row">
+      {% for p in bestsellers %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="product-card ripple-surface">
+        <div style="position:relative;">
+          {{ m.product_thumb(p) }}
+          <span class="product-badge">Bestseller</span>
+        </div>
+        <div class="product-info">
+          <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+          <h3>{{ p.name }}</h3>
+          <span class="fabric">{{ p.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SHOP TOP CATEGORIES ===================== -->
+<section id="top-categories" style="background:linear-gradient(180deg, #F1EBFF 0%, var(--bg) 100%);">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Browse by type</div>
+        <h2>Shop our Top Categories</h2>
+        <p>Six categories, every design custom-stitched to your measurements.</p>
+      </div>
+    </div>
+    <div class="cat-grid">
+      {% for cat in categories %}
+      <a href="{{ url_for('category', slug=cat.slug) }}" class="cat-card ripple-surface">
+        {{ m.category_thumb(cat) }}
+        <h3>{{ cat.label }}</h3>
+        <span>{{ cat.count }} designs</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BEST DESIGNS ===================== -->
+<section id="best-designs">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Editor's picks</div>
+        <h2>Best Designs</h2>
+        <p>Our most-complimented silhouettes and detailing, hand-picked by our design team.</p>
+      </div>
+    </div>
+    <div class="product-grid">
+      {% for p in best_designs %}
+      <a href="{{ url_for('product', product_id=p.id) }}" class="product-card ripple-surface">
+        <div style="position:relative;">
+          {{ m.product_thumb(p) }}
+          <span class="product-badge">Editor's pick</span>
+        </div>
+        <div class="product-info">
+          <div class="cat">{{ p.category.replace('-', ' ') }}</div>
+          <h3>{{ p.name }}</h3>
+          <span class="fabric">{{ p.fabric }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== GURUGRAM SERVICE AREAS ===================== -->
+<section id="gurugram-areas">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <div class="section-tag">Doorstep service</div>
+        <h2>We stitch across {{ business.city }}</h2>
+        <p>Free home measurement visits across these localities — and beyond.</p>
+      </div>
+      <a href="{{ url_for('gurugram_hub') }}" class="see-all">See all Gurugram pages →</a>
+    </div>
+    <div class="areas-served">
+      {% for area in business.areas_served %}
+        <span class="chip">{{ area }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BOOKING ===================== -->
+<section id="order">
+  <div class="video-section" style="background:linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);">
+    <div class="wrap" style="display:grid; grid-template-columns:0.9fr 1fr; gap:48px; align-items:start;">
+      <div>
+        <h2 style="color:#fff; font-size:1.9rem; margin-bottom:14px;">Found a design you love?</h2>
+        <p style="color:rgba(255,255,255,0.85); line-height:1.6; margin-bottom:22px; max-width:44ch;">Book a free home measurement visit — we'll bring fabric swatches and confirm details for the design you've picked.</p>
+        <ul style="list-style:none;">
+          <li style="display:flex; gap:10px; color:#fff; font-size:0.92rem; padding:8px 0;"><span style="color:var(--amber); font-weight:700;">✓</span> Free home measurement visit</li>
+          <li style="display:flex; gap:10px; color:#fff; font-size:0.92rem; padding:8px 0;"><span style="color:var(--amber); font-weight:700;">✓</span> One trial fitting on structured designs</li>
+          <li style="display:flex; gap:10px; color:#fff; font-size:0.92rem; padding:8px 0;"><span style="color:var(--amber); font-weight:700;">✓</span> Doorstep delivery, usually within 48 hours</li>
+        </ul>
+      </div>
+      <form id="orderForm" style="background:var(--surface); border-radius:24px; padding:30px; box-shadow:var(--e8);">
+        <div style="margin-bottom:22px;">
+          <h2 style="font-size:1.75rem; margin:0 0 10px; color:var(--purple-dark);">Book Now</h2>
+          <p style="margin:0; color:rgba(28,27,46,0.78); line-height:1.55;">Tell us the design you want and our team will arrange a visit to take measurements and confirm the details.</p>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:1rem; font-weight:700; color:var(--purple-dark); display:block; margin-bottom:6px;">Full name</label>
+          <input id="name" required placeholder="Your name" style="width:100%; padding:12px; border:1.5px solid var(--outline); border-radius:10px;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:1rem; font-weight:700; color:var(--purple-dark); display:block; margin-bottom:6px;">Design you're interested in</label>
+          <input id="design" placeholder="e.g. Emerald Zari Blouse" style="width:100%; padding:12px; border:1.5px solid var(--outline); border-radius:10px;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:1rem; font-weight:700; color:var(--purple-dark); display:block; margin-bottom:6px;">Query</label>
+          <textarea id="address" placeholder="What would you like us to help with?" style="width:100%; padding:12px; border:1.5px solid var(--outline); border-radius:10px; min-height:70px;"></textarea>
+        </div>
+        <div class="order-form-actions">
+          <a href="tel:{{ business.phone_tel }}" class="btn btn-filled ripple-surface">Call {{ business.phone_display }}</a>
+          <a href="https://wa.me/{{ business.whatsapp_number }}?text=Hi%20SilaiGhar%2C%20I%20want%20to%20book%20a%20measurement%20visit." target="_blank" class="btn btn-outline ripple-surface whatsapp-btn">WhatsApp Us</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
