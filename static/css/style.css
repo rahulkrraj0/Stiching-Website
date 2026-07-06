@@ -99,7 +99,7 @@ body{
 a{color:inherit; text-decoration:none;}
 img{display:block; max-width:100%;}
 .mono{font-family:'Roboto Mono', monospace;}
-.wrap{max-width:1180px; margin:0 auto; padding:0 24px;}
+.wrap{max-width:1180px; margin:0px auto; padding:0 20px;}
 h1,h2,h3{font-family:'Roboto', sans-serif; font-weight:900; letter-spacing:-0.01em; color:var(--ink);}
 
 /* ---------- Ripple ---------- */
@@ -144,6 +144,7 @@ header.appbar{
   color:#ffffff;
   transition:box-shadow .25s;
 }
+header.appbar.nav-open{z-index:220;}
 header.appbar.scrolled{box-shadow:var(--e2);}
 .nav{display:flex; align-items:center; justify-content:space-between; padding:14px 0; gap:20px;}
 .brand{display:flex; align-items:center; gap:10px; color:#ffffff;}
@@ -152,6 +153,9 @@ header.appbar.scrolled{box-shadow:var(--e2);}
   height:auto;
   display:block;
 }
+.brand-text{display:flex; flex-direction:column; line-height:1;}
+.brand-name{font-weight:900; font-size:1rem; color:inherit;}
+.brand-sub{font-size:0.78rem; color:rgba(255,255,255,0.9); margin-top:2px;}
 .brand-mark{
   width:38px;height:38px;border-radius:12px;
   background:linear-gradient(135deg, var(--purple), var(--pink));
@@ -222,7 +226,8 @@ section{padding:64px 0;}
   display:grid; grid-auto-flow:column; grid-auto-columns:240px;
   gap:20px; overflow-x:auto; padding-bottom:14px; scroll-snap-type:x proximity;
   cursor: grab;
-  touch-action: pan-y;
+  /* allow horizontal swipes on touch devices so users can scroll the row */
+  touch-action: pan-x pan-y;
   margin-inline: -24px;
   padding-inline: 24px;
   width: calc(100% + 48px);
@@ -235,6 +240,11 @@ section{padding:64px 0;}
 .product-row::-webkit-scrollbar{height:6px;}
 .product-row::-webkit-scrollbar-thumb{background:var(--outline); border-radius:6px;}
 .product-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:22px;}
+
+/* Carousel dots */
+.carousel-dots{display:flex; gap:8px; justify-content:center; margin-top:12px;}
+.carousel-dots .dot{width:10px; height:10px; border-radius:999px; border:none; background:rgba(255,255,255,0.28); cursor:pointer; padding:0}
+.carousel-dots .dot.active{background:var(--purple); box-shadow:0 0 0 4px rgba(79,63,174,0.08);} 
 
 .product-card{
   background:var(--surface); border-radius:18px; overflow:hidden;
@@ -312,6 +322,20 @@ section{padding:64px 0;}
   #order .order-form-actions a{width:100%;}
 }
 .video-frame video{width:100%; height:100%; object-fit:cover;}
+
+/* Make the Trending section span full viewport width while keeping inner padding */
+#trending .wrap{
+  max-width: 100%;
+  margin: 0; /* remove auto centering */
+  padding-left: 5%;
+  padding-right: 5%;
+}
+#trending .product-row{
+  margin-inline: 0; /* align with viewport edges */
+  width: 100%;
+  padding-inline: 24px; /* keep the same inner padding as other sections */
+  box-sizing: border-box;
+}
 .video-placeholder{
   display:flex; flex-direction:column; align-items:center; gap:10px; color:rgba(255,255,255,0.85);
   font-size:0.85rem; text-align:center; padding:20px;
@@ -444,7 +468,7 @@ section{padding:64px 0;}
 .snackbar .dot{width:8px;height:8px;border-radius:50%; background:var(--teal); flex-shrink:0;}
 
 /* ---------- Breadcrumb / page header ---------- */
-.page-header{padding:40px 0 8px;}
+.page-header{padding:40px 10px 8px;}
 .breadcrumb{font-size:0.82rem; color:var(--ink-soft); margin-bottom:10px;}
 .breadcrumb a:hover{color:var(--purple-dark);}
 .page-header h1{font-size:2rem;}
@@ -723,9 +747,11 @@ section[id]{scroll-margin-top:84px;}
     display:none; position:fixed; inset:0 0 0 auto; width:min(320px, 84vw); height:100vh;
     background:linear-gradient(180deg, #0d1532 0%, #142253 100%);
     flex-direction:column; align-items:stretch; gap:2px; padding:88px 20px 24px;
-    z-index:80; box-shadow:-10px 0 30px rgba(0,0,0,0.25); overflow-y:auto;
+    z-index:120; box-shadow:-10px 0 30px rgba(0,0,0,0.25); overflow-y:auto;
   }
   .nav-links.open{display:flex;}
+  .nav-links{pointer-events:auto;}
+  .nav-links a, .nav-links .drop-toggle{pointer-events:auto;}
   .nav-links > a, .nav-links > .dropdown > .drop-toggle{
     padding:14px 16px; border-radius:12px; font-size:1rem;
   }
@@ -739,9 +765,10 @@ section[id]{scroll-margin-top:84px;}
   .drop-menu a:hover{background:rgba(255,255,255,0.1); color:#fff;}
   .dropdown.open .drop-menu{display:block;}
   .nav-scrim{
-    display:none; position:fixed; inset:0; background:rgba(10,7,29,0.5); z-index:70;
+    display:none; position:fixed; inset:0; background:rgba(10,7,29,0.5); z-index:110;
+    pointer-events:none;
   }
-  .nav-scrim.open{display:block;}
+  .nav-scrim.open{display:block; pointer-events:auto;}
   .nav .btn-sm{display:none;}
 }
 

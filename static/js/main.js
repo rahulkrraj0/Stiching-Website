@@ -29,12 +29,22 @@ document.addEventListener('DOMContentLoaded', function () {
     navLinks && navLinks.classList.remove('open');
     navScrim && navScrim.classList.remove('open');
     navToggle && navToggle.setAttribute('aria-expanded', 'false');
+    const appbarEl = document.getElementById('appbar');
+    if (appbarEl) appbarEl.classList.remove('nav-open');
   }
   if (navToggle && navLinks) {
     navToggle.addEventListener('click', () => {
       const isOpen = navLinks.classList.toggle('open');
       navScrim && navScrim.classList.toggle('open', isOpen);
       navToggle.setAttribute('aria-expanded', String(isOpen));
+      const appbarEl = document.getElementById('appbar');
+      if (appbarEl) appbarEl.classList.toggle('nav-open', isOpen);
+    });
+    // Close the mobile nav when any nav link is clicked (ensures navigation works)
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        closeNav();
+      });
     });
   }
   if (navScrim) navScrim.addEventListener('click', closeNav);
@@ -66,22 +76,108 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // ---- Trending slider controls ----
+  // Custom smooth scroller (shorter duration = faster slide)
+  function animateScrollTo(container, target, duration = 250) {
+    const start = container.scrollLeft;
+    const change = target - start;
+    const startTime = performance.now();
+    const easeInOut = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    function step(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(1, elapsed / duration);
+      container.scrollLeft = Math.round(start + change * easeInOut(t));
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   document.querySelectorAll('.slider-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const targetId = btn.dataset.target;
       const row = document.getElementById(targetId);
       if (!row) return;
       const offset = Math.round(row.clientWidth * 0.75);
-      row.scrollBy({ left: btn.classList.contains('next') ? offset : -offset, behavior: 'smooth' });
+      const target = btn.classList.contains('next') ? row.scrollLeft + offset : row.scrollLeft - offset;
+      animateScrollTo(row, Math.max(0, target), 250);
     });
   });
 
+  // ---- Enhanced Trending slider: dots, autoplay, update on scroll ----
+  (function initTrendingSlider() {
+    const row = document.getElementById('trending-row');
+    if (!row) return;
+    const slides = Array.from(row.children);
+    if (slides.length === 0) return;
+    const gap = 20; // must match CSS .product-row gap
+
+    // create dots container
+    const dotsWrap = document.createElement('div');
+    dotsWrap.className = 'carousel-dots';
+    slides.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'dot'; b.dataset.index = i;
+      b.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dotsWrap.appendChild(b);
+      b.addEventListener('click', () => {
+        const rect = slides[0].getBoundingClientRect();
+        const slideWidth = Math.round(rect.width) + gap;
+        animateScrollTo(row, i * slideWidth, 250);
+      });
+    });
+    row.parentNode.appendChild(dotsWrap);
+
+    // update active dot based on scroll
+    let ticking = false;
+    const updateActive = () => {
+      const rect = slides[0].getBoundingClientRect();
+      const slideWidth = Math.round(rect.width) + gap;
+      const idx = Math.round(row.scrollLeft / slideWidth);
+      dotsWrap.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      ticking = false;
+    };
+    row.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(updateActive);
+        ticking = true;
+      }
+    });
+    // init active
+    updateActive();
+
+    // autoplay
+    let autoTimer = null;
+    const startAutoplay = () => {
+      if (autoTimer) return;
+      autoTimer = setInterval(() => {
+        const rect = slides[0].getBoundingClientRect();
+        const slideWidth = Math.round(rect.width) + gap;
+        const maxScroll = Math.max(0, row.scrollWidth - row.clientWidth);
+        if (row.scrollLeft + slideWidth >= maxScroll - 2) {
+          animateScrollTo(row, 0, 250);
+        } else {
+          animateScrollTo(row, row.scrollLeft + slideWidth, 250);
+        }
+      }, 3500);
+    };
+    const stopAutoplay = () => { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } };
+    row.addEventListener('mouseenter', stopAutoplay);
+    row.addEventListener('mouseleave', startAutoplay);
+    row.addEventListener('touchstart', stopAutoplay, { passive: true });
+    row.addEventListener('touchend', startAutoplay);
+    startAutoplay();
+  })();
+
   // ---- Drag-to-scroll for product rows ----
-  document.querySelectorAll('.product-row').forEach(row => {
+  const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer:coarse)').matches;
+  if (!isCoarsePointer) {
+    document.querySelectorAll('.product-row').forEach(row => {
     let isDown = false;
     let startX = 0;
     let scrollLeft = 0;
     let moved = false;
+    let movedDistance = 0;
+      let pointerCaptured = false;
+      let activePointerId = null;
 
     const onPointerDown = (e) => {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -91,17 +187,26 @@ document.addEventListener('DOMContentLoaded', function () {
       const rect = row.getBoundingClientRect();
       startX = e.clientX - rect.left;
       scrollLeft = row.scrollLeft;
-      e.preventDefault();
-      row.setPointerCapture(e.pointerId);
+        // don't capture pointer immediately; capture only if user actually drags
     };
 
     const onPointerMove = (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const rect = row.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const walk = (x - startX) * 1.2;
-      if (Math.abs(walk) > 5) moved = true;
+      movedDistance = Math.abs(walk);
+      if (movedDistance > 12) moved = true;
+        // start capturing the pointer only when drag threshold exceeded
+        if (moved && !pointerCaptured) {
+          try {
+            row.setPointerCapture(e.pointerId);
+            pointerCaptured = true;
+            activePointerId = e.pointerId;
+          } catch (err) {
+            // ignore if not supported
+          }
+        }
       row.scrollLeft = scrollLeft - walk;
     };
 
@@ -109,23 +214,28 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!isDown) return;
       isDown = false;
       row.classList.remove('dragging');
-      if (e.pointerId != null) row.releasePointerCapture(e.pointerId);
+        if (pointerCaptured && activePointerId != null) {
+          try { row.releasePointerCapture(activePointerId); } catch (err) {}
+          pointerCaptured = false;
+          activePointerId = null;
+        }
     };
 
     const onClick = (e) => {
-      if (moved) {
+      if (moved && movedDistance > 12) {
         e.preventDefault();
         e.stopPropagation();
       }
     };
 
-    row.addEventListener('pointerdown', onPointerDown);
-    row.addEventListener('pointermove', onPointerMove);
-    row.addEventListener('pointerup', onPointerUp);
-    row.addEventListener('pointerleave', onPointerUp);
-    row.addEventListener('pointercancel', onPointerUp);
-    row.addEventListener('click', onClick, true);
-  });
+      row.addEventListener('pointerdown', onPointerDown);
+      row.addEventListener('pointermove', onPointerMove);
+      row.addEventListener('pointerup', onPointerUp);
+      row.addEventListener('pointerleave', onPointerUp);
+      row.addEventListener('pointercancel', onPointerUp);
+      row.addEventListener('click', onClick, false);
+    });
+  }
 
   // ---- FAB scrolls to the booking form ----
   const fab = document.getElementById('fabBtn');

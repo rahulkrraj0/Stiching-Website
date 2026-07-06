@@ -59,8 +59,12 @@
   <div class="wrap nav">
     <a href="{{ url_for('home') }}" class="brand" aria-label="{{ site_name }}">
       <img src="{{ url_for('static', filename='img/favicon.svg') }}" alt="{{ site_name }}" class="brand-logo" />
+      <div class="brand-text">
+        <div class="brand-name">{{ site_name }}</div>
+      </div>
     </a>
     <nav class="nav-links" id="navLinks">
+      <a href="{{ url_for('home') }}">Home</a>
       <div class="dropdown" id="catDropdown">
         <button type="button" class="drop-toggle" id="catDropToggle" aria-expanded="false" aria-haspopup="true">Categories ▾</button>
         <div class="drop-menu">
