@@ -11,7 +11,7 @@ venv/
 env/
 
 # Uploads (real customer photos — keep locally, don't commit)
-static/img/
+
 
 # OS
 .DS_Store
