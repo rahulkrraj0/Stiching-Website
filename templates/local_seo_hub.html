@@ -1,21 +1,19 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
 
-{% block title %}Tailoring in {{ business.city }} — Doorstep Service Areas | {{ site_name }}{% endblock %}
-{% block meta_description %}{{ site_name }} offers doorstep tailoring across {{ business.city }} — free home measurement visits in {{ business.areas_served[:5]|join(', ') }} and more.{% endblock %}
+{% block title %}Tailoring in {{ business.city }} — Studio Service Areas | {{ site_name }}{% endblock %}
+{% block meta_description %}{{ site_name }} offers custom tailoring in {{ business.city }} — visit our studio for consultations, measurements, and fittings in {{ business.areas_served[:5]|join(', ') }} and more.{% endblock %}
 
 {% block content %}
 <div class="page-header wrap">
   <div class="breadcrumb"><a href="{{ url_for('home') }}">Home</a> / Gurugram</div>
-  <h1>Doorstep Tailoring in {{ business.city }}</h1>
+  <h1>Studio Tailoring in {{ business.city }}</h1>
 </div>
 
 <section style="padding-top:8px;">
   <div class="wrap">
     <p class="local-intro">
-      {{ site_name }} brings measurement, fabric selection, fitting, and delivery to your door anywhere in
-      {{ business.city }}. Pick a category below to see designs and locality-specific details, or book a
-      free measurement visit directly.
+      {{ site_name }} welcomes customers to our studio in {{ business.city }} for measurements, fabric selection, fitting, and final collection. Pick a category below to see designs and locality-specific details, or book a consultation directly.
     </p>
     <div class="areas-served">
       {% for area in business.areas_served %}
@@ -23,7 +21,7 @@
       {% endfor %}
     </div>
     <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
-      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a free measurement visit</a>
+      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a studio consultation</a>
       <a href="tel:{{ business.phone_tel }}" class="btn btn-outline ripple-surface">Call {{ business.phone_display }}</a>
     </div>
   </div>
@@ -41,7 +39,7 @@
       {% for cat in categories %}
       <a href="{{ url_for('gurugram_category', slug=cat.slug) }}" class="local-hub-card ripple-surface">
         <h3>{{ cat.label }} in {{ business.city }}</h3>
-        <span>{{ cat.count }} design{{ 's' if cat.count != 1 else '' }} · free home visit</span>
+        <span>{{ cat.count }} design{{ 's' if cat.count != 1 else '' }} · studio visit</span>
       </a>
       {% endfor %}
     </div>

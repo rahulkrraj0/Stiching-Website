@@ -28,7 +28,7 @@
         <div class="admin-card">
           <div class="admin-card-header">
             <h3>{% if edit_product %}Edit product{% else %}Add product{% endif %}</h3>
-            <p class="admin-card-copy">Choose a clear title, category and upload a product image to improve site visual appeal.</p>
+            <p class="admin-card-copy">Choose a clear title, category and upload one or more product images for a gallery view.</p>
           </div>
           <form action="{{ url_for('admin_update_product') if edit_product else url_for('admin_add_product') }}" method="post" enctype="multipart/form-data" class="admin-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -40,16 +40,40 @@
               <select name="category" required>
                 <option value="">Select category</option>
                 {% for slug, label in existing_categories.items() %}
-                  <option value="{{ slug }}" {% if edit_product and slug == edit_product.category %}selected{% endif %}>{{ label }}</option>
+                  <option value="{{ slug }}" {% if edit_product and slug == edit_product.category %}selected{% endif %}>
+                    {% if label is mapping %}{{ label.name }}{% else %}{{ label }}{% endif %}
+                  </option>
                 {% endfor %}
               </select>
               <input name="fabric" placeholder="Fabric" value="{{ edit_product.fabric if edit_product else '' }}" />
               <input name="hash_number" placeholder="Hash number" value="{{ edit_product.hash_number if edit_product else '' }}" />
-              <input type="file" name="image" accept="image/*" />
-              {% if edit_product and edit_product.image %}
-                <div class="small-note">Current image: <a href="{{ url_for('static', filename='img/' + edit_product.image) }}" target="_blank">{{ edit_product.image }}</a></div>
+              <div style="grid-column:1/-1;">
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Product Images (multiple)</label>
+                <input type="file" name="images" accept="image/*" multiple />
+                <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:6px;">Upload one or more images. They will be shown in a gallery view on the product page.</p>
+              </div>
+              {% if edit_product and edit_product.images and edit_product.images|length > 0 %}
+                <div class="small-note" style="grid-column:1/-1;">
+                  Current images: 
+                  {% for img in edit_product.images %}
+                    <a href="{{ url_for('static', filename='img/' + img) }}" target="_blank">{{ img }}</a>{% if not loop.last %}, {% endif %}
+                  {% endfor %}
+                </div>
+              {% elif edit_product and edit_product.image %}
+                <div class="small-note" style="grid-column:1/-1;">Current image: <a href="{{ url_for('static', filename='img/' + edit_product.image) }}" target="_blank">{{ edit_product.image }}</a></div>
               {% endif %}
               <input name="tags" list="tagSuggestions" placeholder="tags,comma,separated" value="{{ edit_product.tags | join(',') if edit_product else '' }}" />
+              <div style="grid-column:1/-1;">
+                <label style="display:block; font-weight:600; margin-bottom:8px;">Show on homepage sections</label>
+                <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                  {% for value, label in homepage_group_options %}
+                    <label style="display:flex; align-items:center; gap:6px; background:#fff; border:1px solid rgba(79,63,174,0.12); border-radius:999px; padding:8px 12px;">
+                      <input type="checkbox" name="homepage_groups" value="{{ value }}" {% if edit_product and value in (edit_product.homepage_groups or []) %}checked{% endif %}>
+                      <span>{{ label }}</span>
+                    </label>
+                  {% endfor %}
+                </div>
+              </div>
               <datalist id="tagSuggestions">
                 {% for tag in tag_suggestions %}
                   <option value="{{ tag }}"></option>
@@ -125,12 +149,13 @@
       <div class="admin-card">
         <div class="admin-card-header">
           <h3>Add new category</h3>
-          <p class="admin-card-copy">Enter a label for the category and it will become available in the product form.</p>
+          <p class="admin-card-copy">Enter a label and optionally upload a cover image for the category.</p>
         </div>
-        <form action="{{ url_for('admin_add_category') }}" method="post" class="admin-form">
+        <form action="{{ url_for('admin_add_category') }}" method="post" enctype="multipart/form-data" class="admin-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <div class="form-grid">
             <input name="label" placeholder="Category label" required />
+            <input type="file" name="category_image" accept="image/*" />
           </div>
           <div class="inline-actions">
             <button class="btn btn-filled" type="submit">Add category</button>
@@ -145,7 +170,18 @@
         <ul class="admin-offer-list">
           {% for slug, label in existing_categories.items() %}
             <li>
-              <span>{{ label }} <small class="admin-muted">({{ slug }})</small></span>
+              <span>
+                {% if label is mapping %}
+                  {{ label.name }} <small class="admin-muted">({{ slug }})</small>
+                  {% if label.image %}<small class="admin-muted">— has image</small>{% endif %}
+                {% else %}
+                  {{ label }} <small class="admin-muted">({{ slug }})</small>
+                {% endif %}
+              </span>
+              <form action="{{ url_for('admin_delete_category', slug=slug) }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-outline btn-sm" type="submit">Delete</button>
+              </form>
             </li>
           {% endfor %}
         </ul>

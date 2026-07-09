@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% import "_macros.html" as m %}
 
-{% block title %}{{ label }} in {{ business.city }} — Doorstep Tailoring | {{ site_name }}{% endblock %}
-{% block meta_description %}Custom {{ label|lower }} stitching in {{ business.city }} with free home measurement visits. Serving {{ business.areas_served[:4]|join(', ') }} and more.{% endblock %}
+{% block title %}{{ label }} in {{ business.city }} — Studio Tailoring | {{ site_name }}{% endblock %}
+{% block meta_description %}Custom {{ label|lower }} stitching in {{ business.city }} at our studio. Serving {{ business.areas_served[:4]|join(', ') }} and more.{% endblock %}
 
 {% block schema %}
 {{ super() }}
@@ -36,9 +36,7 @@
 <section style="padding-top:8px;">
   <div class="wrap">
     <p class="local-intro">
-      Free home measurement visits for {{ label|lower }} across {{ business.city }}. We bring fabric swatches
-      to you, confirm fit and finishing at your door, and stitch every piece to your exact measurements —
-      no shop visit needed.
+      Visit our studio in {{ business.city }} for {{ label|lower }} consultations, fabric selection, and fitting. We tailor every piece to your exact measurements and style preferences.
     </p>
     <div class="areas-served">
       {% for area in business.areas_served %}
@@ -46,7 +44,7 @@
       {% endfor %}
     </div>
     <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:8px;">
-      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a free measurement visit</a>
+      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a studio consultation</a>
       <a href="tel:{{ business.phone_tel }}" class="btn btn-outline ripple-surface">Call {{ business.phone_display }}</a>
     </div>
   </div>

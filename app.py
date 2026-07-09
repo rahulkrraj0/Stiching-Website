@@ -15,6 +15,7 @@ import functools
 import json
 import logging
 import os
+import random
 import re
 import secrets
 import uuid
@@ -56,13 +57,14 @@ if not app.config["SECRET_KEY"]:
         "running in production — see SETUP.md."
     )
 
-app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # 8 MB upload cap
+app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024  # 500 MB upload cap (for large/multiple images)
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
 
 logging.basicConfig(level=logging.INFO if not DEBUG else logging.DEBUG)
 logger = logging.getLogger("silaighar")
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
 
 def _normalize_password_hash(raw_hash: str) -> str:
@@ -153,6 +155,14 @@ DEFAULT_CATEGORIES = {
     "indo-western": "Indo-Western",
 }
 
+HOMEPAGE_GROUP_OPTIONS = [
+    ("trending", "Trending"),
+    ("top10", "Top 10"),
+    ("stitch_the_look", "Stitch the Look!"),
+    ("bestsellers", "Bestsellers"),
+    ("best_designs", "Best Designs"),
+]
+
 
 def load_categories():
     return _read_json(CATEGORIES_PATH, DEFAULT_CATEGORIES.copy())
@@ -183,17 +193,27 @@ def load_business():
 
 
 def build_categories(products, categories):
-    """Group products by category and pick a cover product for each."""
+    """Build category cards for the site, including categories with no matching products yet."""
     cats = []
-    for slug, label in categories.items():
+    for slug, cat_data in categories.items():
+        # Handle both legacy string format and new object format
+        if isinstance(cat_data, dict):
+            label = cat_data.get("name", slug)
+            cat_image = cat_data.get("image")
+        else:
+            label = cat_data
+            cat_image = None
+
         items = [p for p in products if p.get("category") == slug]
-        if items:
-            cats.append({
-                "slug": slug,
-                "label": label,
-                "count": len(items),
-                "cover": items[0],
-            })
+        cat_obj = {
+            "slug": slug,
+            "label": label,
+            "count": len(items),
+            "cover": items[0] if items else {"color": "#6C3CE9", "icon": "kurta", "image": cat_image},
+        }
+        if cat_image:
+            cat_obj["image"] = cat_image
+        cats.append(cat_obj)
     return cats
 
 
@@ -203,6 +223,26 @@ def slugify(text):
     value = re.sub(r"\s+", "-", value)
     value = re.sub(r"-+", "-", value)
     return value
+
+
+def get_homepage_groups(product):
+    groups = product.get("homepage_groups") or []
+    if isinstance(groups, str):
+        groups = [groups]
+    if groups:
+        return [g for g in groups if g in {opt[0] for opt in HOMEPAGE_GROUP_OPTIONS}]
+
+    tags = product.get("tags", [])
+    legacy_groups = []
+    if "bestseller" in tags:
+        legacy_groups.append("bestsellers")
+    if "best_design" in tags:
+        legacy_groups.append("best_designs")
+    if "look" in tags:
+        legacy_groups.append("stitch_the_look")
+    if product.get("rank"):
+        legacy_groups.append("top10")
+    return legacy_groups
 
 
 def allowed_file(filename):
@@ -296,11 +336,23 @@ def admin_logout():
 # Global template context + security headers
 # --------------------------------------------------------------------------
 
+def get_category_label(cat_data):
+    """Extract label from category data (handles both string and object formats)."""
+    if isinstance(cat_data, dict):
+        return cat_data.get("name", "Unnamed")
+    return cat_data
+
+
 @app.context_processor
 def inject_globals():
+    categories = load_categories()
+    # Create a navigation-friendly dict with labels
+    nav_cats = {}
+    for slug, cat_data in categories.items():
+        nav_cats[slug] = get_category_label(cat_data)
     return {
         "site_name": "SilaiGhar",
-        "nav_categories": load_categories(),
+        "nav_categories": nav_cats,
         "ticker_messages": load_offers(),
         "business": load_business(),
         "site_url": SITE_URL,
@@ -338,6 +390,7 @@ def admin_dashboard():
         hero=hero,
         tag_suggestions=tag_suggestions,
         existing_categories=category_map,
+        homepage_group_options=HOMEPAGE_GROUP_OPTIONS,
         biz=business,
     )
 
@@ -347,7 +400,7 @@ def admin_dashboard():
 def admin_add_product():
     products = load_products()
     form = request.form
-    file = request.files.get("image")
+    files = request.files.getlist("images")  # Handle multiple images
     try:
         next_id = max([p.get("id", 0) for p in products]) + 1 if products else 1
         product = {
@@ -360,6 +413,8 @@ def admin_add_product():
             "icon": form.get("category") or "kurta",
             "desc": (form.get("desc") or "").strip(),
             "tags": [t.strip() for t in (form.get("tags") or "").split(",") if t.strip()],
+            "homepage_groups": [g for g in form.getlist("homepage_groups") if g in {opt[0] for opt in HOMEPAGE_GROUP_OPTIONS}],
+            "images": [],  # Array for multiple images
         }
         if product["hash_number"]:
             duplicate = next(
@@ -368,11 +423,20 @@ def admin_add_product():
             if duplicate:
                 flash(f"Hash number '{product['hash_number']}' is already used in this category.", "error")
                 return redirect(url_for("admin_dashboard") + "#admin-products")
-        saved_filename = save_upload(file)
-        if saved_filename:
-            product["image"] = saved_filename
-        elif file and file.filename:
-            flash("Image was not saved — please upload a valid PNG/JPG/WEBP under 8MB.", "error")
+
+        # Handle multiple image uploads
+        for file in files:
+            if file and file.filename:
+                saved_filename = save_upload(file)
+                if saved_filename:
+                    product["images"].append(saved_filename)
+                else:
+                    flash(f"Image '{file.filename}' was not saved — must be valid PNG/JPG/WEBP under 8MB.", "error")
+
+        # Keep backward compatibility: set primary image as first one
+        if product["images"]:
+            product["image"] = product["images"][0]
+
         price = form.get("price")
         if price:
             try:
@@ -414,6 +478,7 @@ def admin_edit_product(product_id):
         edit_product=product,
         tag_suggestions=tag_suggestions,
         existing_categories=category_map,
+        homepage_group_options=HOMEPAGE_GROUP_OPTIONS,
         hero=load_hero(),
         biz=load_business(),
     )
@@ -424,7 +489,7 @@ def admin_edit_product(product_id):
 def admin_update_product():
     products = load_products()
     form = request.form
-    file = request.files.get("image")
+    files = request.files.getlist("images")  # Handle multiple images
     try:
         pid = int(form.get("id"))
     except (TypeError, ValueError):
@@ -439,6 +504,7 @@ def admin_update_product():
     prod["hash_number"] = form.get("hash_number", "").strip() or prod.get("hash_number", "")
     prod["desc"] = (form.get("desc") or prod.get("desc") or "").strip()
     prod["tags"] = [t.strip() for t in (form.get("tags") or "").split(",") if t.strip()]
+    prod["homepage_groups"] = [g for g in form.getlist("homepage_groups") if g in {opt[0] for opt in HOMEPAGE_GROUP_OPTIONS}]
     if prod["hash_number"]:
         duplicate = next(
             (p for p in products if p.get("id") != prod["id"]
@@ -447,11 +513,24 @@ def admin_update_product():
         if duplicate:
             flash(f"Hash number '{prod['hash_number']}' is already used in this category.", "error")
             return redirect(url_for("admin_dashboard") + "#admin-products")
-    saved_filename = save_upload(file)
-    if saved_filename:
-        prod["image"] = saved_filename
-    elif file and file.filename:
-        flash("Image was not saved — please upload a valid PNG/JPG/WEBP under 8MB.", "error")
+
+    # Handle multiple image uploads
+    if files and files[0].filename:  # If new images are uploaded
+        prod["images"] = []
+        for file in files:
+            if file and file.filename:
+                saved_filename = save_upload(file)
+                if saved_filename:
+                    prod["images"].append(saved_filename)
+                else:
+                    flash(f"Image '{file.filename}' was not saved — must be valid PNG/JPG/WEBP under 8MB.", "error")
+        # Set primary image as first one
+        if prod["images"]:
+            prod["image"] = prod["images"][0]
+    # If no new images uploaded, keep existing ones
+    elif "images" not in prod:
+        prod["images"] = []
+    
     price = form.get("price")
     if price:
         try:
@@ -498,9 +577,39 @@ def admin_add_category():
     while slug in categories:
         i += 1
         slug = f"{original_slug}-{i}"
-    categories[slug] = label
+    
+    # Handle category image upload
+    file = request.files.get("category_image")
+    category_obj = {"name": label}
+    if file and file.filename:
+        saved_filename = save_upload(file, prefix="category_")
+        if saved_filename:
+            category_obj["image"] = saved_filename
+        else:
+            flash("Category image was not saved — please upload a valid PNG/JPG/WEBP under 8MB.", "error")
+    
+    categories[slug] = category_obj if file and file.filename else label
     save_categories(categories)
     flash("Category added.", "success")
+    return redirect(url_for("admin_dashboard") + "#admin-categories")
+
+
+@app.route("/admin/category/delete/<slug>", methods=["POST"])
+@login_required
+def admin_delete_category(slug):
+    categories = load_categories()
+    if slug not in categories:
+        flash("Category not found.", "error")
+        return redirect(url_for("admin_dashboard") + "#admin-categories")
+
+    products = load_products()
+    if any(p.get("category") == slug for p in products):
+        flash("Please reassign or remove products in this category before deleting it.", "error")
+        return redirect(url_for("admin_dashboard") + "#admin-categories")
+
+    del categories[slug]
+    save_categories(categories)
+    flash("Category deleted.", "success")
     return redirect(url_for("admin_dashboard") + "#admin-categories")
 
 
@@ -550,13 +659,14 @@ def admin_update_hero():
 @app.route("/")
 def home():
     products = load_products()
-    trending = [p for p in products if "trending" in p.get("tags", [])][:8]
-    bestsellers = [p for p in products if "bestseller" in p.get("tags", [])][:8]
-    best_designs = [p for p in products if "best_design" in p.get("tags", [])][:8]
-    stitch_the_look = [p for p in products if "look" in p.get("tags", [])][:6]
-    top10 = sorted([p for p in products if p.get("rank")], key=lambda p: p["rank"])[:10]
+    trending = [p for p in products if "trending" in get_homepage_groups(p)][:8]
+    bestsellers = [p for p in products if "bestsellers" in get_homepage_groups(p)][:8]
+    best_designs = [p for p in products if "best_designs" in get_homepage_groups(p)][:8]
+    stitch_the_look = [p for p in products if "stitch_the_look" in get_homepage_groups(p)][:6]
+    top10 = sorted([p for p in products if "top10" in get_homepage_groups(p)], key=lambda p: p.get("rank") or 999)[:10]
     category_map = load_categories()
     categories = build_categories(products, category_map)
+    featured_categories = random.sample(categories, k=min(6, len(categories))) if categories else []
     hero = load_hero()
     return render_template(
         "index.html",
@@ -565,7 +675,7 @@ def home():
         best_designs=best_designs,
         stitch_the_look=stitch_the_look,
         top10=top10,
-        categories=categories,
+        categories=featured_categories,
         hero=hero,
     )
 
@@ -575,9 +685,10 @@ def category(slug):
     category_map = load_categories()
     if slug not in category_map:
         abort(404)
+    label = get_category_label(category_map[slug])
     products = load_products()
     items = [p for p in products if p["category"] == slug]
-    return render_template("category.html", label=category_map[slug], slug=slug, items=items)
+    return render_template("category.html", label=label, slug=slug, items=items)
 
 
 @app.route("/product/<int:product_id>")
@@ -613,7 +724,7 @@ def stitch_the_look_page():
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    return render_template("about.html", faqs=SITE_FAQS)
 
 
 # --------------------------------------------------------------------------
@@ -621,20 +732,81 @@ def about():
 # --------------------------------------------------------------------------
 
 LOCAL_SEO_FAQS = [
-    ("Do you provide home measurement visits across Gurugram?",
-     "Yes — we cover all major sectors and localities in Gurugram. Book a "
-     "free home measurement visit and our team will confirm a convenient time."),
+    ("Do you offer studio consultations in Gurugram?",
+     "Yes — customers visit our studio location in Gurugram for consultations, "
+     "measurements, and fittings. We’ll confirm a convenient time for you."),
     ("How long does stitching usually take?",
-     "Most designs are ready within a few days of your measurement visit and "
+     "Most designs are ready within a few days of your consultation and "
      "fabric confirmation. Structured designs that need a trial fitting may "
      "take a little longer."),
     ("Do I need to visit a shop?",
-     "No — measurement, fabric selection, fitting, and delivery all happen "
-     "at your doorstep in Gurugram."),
+     "Yes — our services are carried out at our studio location, where customers "
+     "come in for measurements, fittings, and final collection."),
     ("How is pricing decided?",
      "Pricing depends on fabric, fit, and finishing details, and is "
-     "confirmed during your free home measurement visit."),
+     "confirmed during your studio consultation."),
 ]
+
+SITE_FAQS = {
+    "The Bespoke Process & Definition": [
+        ("What is the difference between bespoke and made-to-measure?", 
+         "Bespoke is made from a custom-drafted pattern from scratch; made-to-measure modifies a pre-existing block."),
+        ("What does 'bespoke' actually mean?", 
+         "It means the garment is 'spoken for' — created entirely to your unique measurements, posture, and design preferences."),
+        ("How many fittings are required?", 
+         "Usually 2-4, including a 'basted' or 'muslin' fitting to test the fit before final sewing."),
+        ("How long does the entire process take?", 
+         "Ranges from 3-4 weeks for simple designs to 6-10 weeks, depending on complexity and handwork."),
+        ("Do I need an appointment?", 
+         "Yes, bespoke services are by appointment only to ensure personalized attention."),
+    ],
+    "Design, Fabrics & Personalization": [
+        ("What customization options are available?", 
+         "Unlimited choices: lapel style, pocket type, buttons, lining, thread colour, monogramming, collar style, cuff, front placket, and more."),
+        ("Can I bring my own design ideas or photos?", 
+         "Yes, photos are welcome to guide the design conversation and help us understand your vision."),
+        ("Can I bring my own fabric?",
+         "Absolutely. If you have a special fabric in mind, bring it and we'll incorporate it into your design."),
+    ],
+    "Pricing, Investment & Policies": [
+        ("What is the price range for bespoke dresses?", 
+         "Pricing varies based on fabric, design complexity, and finishing details. Contact us for a personalized quote."),
+        ("Is advance payment required?", 
+         "Usually a 50% advance payment is required to start production. The balance is due upon completion."),
+        ("What is your cancellation/return policy?", 
+         "Because garments are custom-made, refunds are generally not offered, but 'perfect fit' guarantees and free alterations are provided."),
+        ("Are alterations included?", 
+         "Yes, complimentary adjustments are included within a certain timeframe after delivery."),
+    ],
+    "Fit, Care & Maintenance": [
+        ("What happens if my weight changes after I order?", 
+         "Extra fabric is left in the seams for future adjustments at a minimal cost."),
+        ("How should I care for my bespoke garments?", 
+         "Use wooden hangers, brush regularly, hand-wash with mild detergent, and dry clean sparingly. Proper care ensures your garments last for years."),
+        ("Do you store my measurements?", 
+         "Yes, a fit profile is kept on file for faster, more convenient ordering in the future."),
+        ("Can you alter garments not made by you?", 
+         "No, we alter only our own handcrafted garments to maintain quality standards."),
+    ],
+    "Wedding & Special Occasions": [
+        ("Do you offer wedding packages?", 
+         "Yes, tailored options for brides, grooms, bridesmaids, and groomsmen with coordinated timelines."),
+        ("How far in advance should I book for a wedding?", 
+         "Recommend 3-4 months to avoid rush fees and ensure perfect timing for your special day."),
+        ("Can you create matching pieces for a bridal party?",
+         "Yes, we specialize in coordinated bridal parties. We ensure consistent quality and timing for all pieces."),
+    ],
+    "Logistics & Location": [
+        ("Do you offer virtual consultations?", 
+         "Yes, especially useful for first-time clients or those visiting from out of town."),
+        ("Can I visit your studio?",
+         "Yes — customers visit our studio for consultations, fittings, and final collection. Please book an appointment in advance."),
+        ("What are your hours of operation?",
+         "We are open 9:30 AM to 10:00 PM, Monday through Sunday. Appointments can be booked outside these hours for special requests."),
+        ("Will I get to see the fabric?",
+         "Yes, when we visit you we bring our entire range of fabric swatches which you can see, feel, and order from."),
+    ],
+}
 
 
 @app.route("/gurugram")
@@ -655,12 +827,18 @@ def gurugram_category(slug):
     category_map = load_categories()
     if slug not in category_map:
         abort(404)
+    cat_data = category_map[slug]
+    # Handle both legacy string format and new object format
+    if isinstance(cat_data, dict):
+        label = cat_data.get("name", slug)
+    else:
+        label = cat_data
     products = load_products()
     items = [p for p in products if p["category"] == slug]
     business = load_business()
     return render_template(
         "local_seo.html",
-        label=category_map[slug],
+        label=label,
         slug=slug,
         items=items,
         business=business,
@@ -730,5 +908,10 @@ def server_error(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=DEBUG, host=os.environ.get("HOST", "0.0.0.0"),
-             port=int(os.environ.get("PORT", 5000)))
+    app.run(
+        debug=DEBUG,
+        host=os.environ.get("HOST", "0.0.0.0"),
+        port=int(os.environ.get("PORT", 5000)),
+        use_reloader=False,
+        threaded=True,
+    )

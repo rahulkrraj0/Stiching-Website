@@ -1,8 +1,30 @@
 {
-  "blouse": "Blouses",
-  "kurta": "Kurtas & Kurtis",
-  "saree-fall": "Saree Fall & Pico",
-  "suit": "Suits & Blazers",
-  "bridal": "Bridal & Occasion Wear",
-  "indo-western": "Indo-Western"
+  "bridal-collection": {
+    "name": "Bridal Collection",
+    "image": "category_25d39034a8cd40368e62f01ce04451f9_Bridal_Collection.jpeg"
+  },
+  "blouses-collection": {
+    "name": "Blouses Collection",
+    "image": "category_7f6753118d124ed9b3721507efde7aa5_Blouses.jpeg"
+  },
+  "salwar-suits": {
+    "name": "Salwar Suits",
+    "image": "category_662a6341be4b4fd1b2bfb1eafc208111_Salwar_Suits.jpeg"
+  },
+  "kurtis": {
+    "name": "Kurtis",
+    "image": "category_62f55d216399495c8004ff5cf59489db_Kurtis.jpeg"
+  },
+  "lehengas": {
+    "name": "Lehengas",
+    "image": "category_ad9f8221e0264aac963d56ea50d79435_Lehengas.jpeg"
+  },
+  "indo-western": {
+    "name": "Indo-Western",
+    "image": "category_cdd11936a16c49d8a40dbc20b6deb143_Indo-Western.jpeg"
+  },
+  "festive-collection": {
+    "name": "Festive Collection",
+    "image": "category_6e05fa9d1b2744aca576f89863d62b0c_Festive_Collection.jpeg"
+  }
 }

@@ -39,7 +39,9 @@
 
 {% macro product_thumb(p, size=120) %}
 <div class="product-thumb" style="background:{{ p.color }}22;">
-  {% if p.image %}
+  {% if p.images and p.images|length > 0 %}
+    <img src="{{ url_for('static', filename='img/' + p.images[0]) }}" alt="{{ p.name }} — {{ p.fabric or 'custom tailoring' }}" loading="lazy" />
+  {% elif p.image %}
     <img src="{{ url_for('static', filename='img/' + p.image) }}" alt="{{ p.name }} — {{ p.fabric or 'custom tailoring' }}" loading="lazy" />
   {% else %}
     <svg viewBox="0 0 130 130" style="color:{{ p.color }}; stroke:{{ p.color }};" aria-hidden="true">
@@ -49,13 +51,75 @@
 </div>
 {% endmacro %}
 
-{% macro category_thumb(cat) %}
-<div class="cat-thumb" style="background:{{ cat.cover.color }}22;">
-  {% if cat.cover.image %}
-    <img src="{{ url_for('static', filename='img/' + cat.cover.image) }}" alt="{{ cat.label }}" loading="lazy" />
+{% macro image_gallery(p) %}
+<div class="image-gallery">
+  {% if p.images and p.images|length > 0 %}
+    <div class="gallery-stage">
+      <div class="gallery-main">
+        <img src="{{ url_for('static', filename='img/' + p.images[0]) }}" alt="{{ p.name }}" id="main-image" />
+      </div>
+    </div>
+    {% if p.images|length > 1 %}
+      <div class="gallery-strip">
+        <div class="gallery-thumbnails" role="list" aria-label="Product gallery thumbnails">
+          {% for img in p.images %}
+            <button type="button" class="gallery-thumb{% if loop.first %} active{% endif %}" data-full="{{ url_for('static', filename='img/' + img) }}" aria-label="Show image {{ loop.index }}">
+              <img src="{{ url_for('static', filename='img/' + img) }}" alt="Thumbnail {{ loop.index }}" />
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% elif p.image %}
+    <div class="gallery-stage">
+      <div class="gallery-main">
+        <img src="{{ url_for('static', filename='img/' + p.image) }}" alt="{{ p.name }}" />
+      </div>
+    </div>
   {% else %}
-    <svg viewBox="0 0 130 130" style="color:{{ cat.cover.color }}; stroke:{{ cat.cover.color }};" aria-hidden="true">
+    <div class="gallery-stage">
+      <div class="product-thumb" style="background:{{ p.color }}22; height:400px; display:flex; align-items:center; justify-content:center;">
+        <svg viewBox="0 0 130 130" style="color:{{ p.color }}; stroke:{{ p.color }}; width:150px; height:150px;" aria-hidden="true">
+          {{ icon_path(p.icon) }}
+        </svg>
+      </div>
+    </div>
+  {% endif %}
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const galleries = document.querySelectorAll('.image-gallery');
+  galleries.forEach(function(gallery) {
+    const thumbs = gallery.querySelectorAll('.gallery-thumb');
+    const mainImage = gallery.querySelector('#main-image');
+    if (!mainImage || thumbs.length === 0) return;
+
+    thumbs.forEach(thumb => {
+      thumb.addEventListener('click', function() {
+        const full = this.dataset.full;
+        if (full) mainImage.src = full;
+        thumbs.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  });
+});
+</script>
+{% endmacro %}
+
+{% macro category_thumb(cat) %}
+<div class="cat-thumb" style="background:{{ (cat.cover.color if cat.cover and cat.cover.color else '#6C3CE9') }}22;">
+  {% if cat.image %}
+    <img src="{{ url_for('static', filename='img/' + cat.image) }}" alt="{{ cat.label }}" loading="lazy" />
+  {% elif cat.cover and cat.cover.image %}
+    <img src="{{ url_for('static', filename='img/' + cat.cover.image) }}" alt="{{ cat.label }}" loading="lazy" />
+  {% elif cat.cover and cat.cover.icon %}
+    <svg viewBox="0 0 130 130" style="color:{{ cat.cover.color if cat.cover and cat.cover.color else '#6C3CE9' }}; stroke:{{ cat.cover.color if cat.cover and cat.cover.color else '#6C3CE9' }};" aria-hidden="true">
       {{ icon_path(cat.cover.icon) }}
+    </svg>
+  {% else %}
+    <svg viewBox="0 0 130 130" style="color:#6C3CE9; stroke:#6C3CE9;" aria-hidden="true">
+      {{ icon_path('kurta') }}
     </svg>
   {% endif %}
 </div>

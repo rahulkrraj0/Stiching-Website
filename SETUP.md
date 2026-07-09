@@ -39,7 +39,7 @@ python3 -c "import secrets; print(secrets.token_hex(32))"
 
 **ADMIN_PASSWORD_HASH** — generate a hash of your chosen password:
 ```bash
-python3 -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-password-here'))"
+python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-password-here'))"
 ```
 
 Paste the output into `.env`.

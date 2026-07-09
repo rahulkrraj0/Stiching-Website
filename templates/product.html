@@ -15,13 +15,7 @@
 <section style="padding-top:16px;">
   <div class="wrap pd-grid">
     <div class="pd-thumb" style="background:{{ p.color }}18;">
-      {% if p.image %}
-        <img src="{{ url_for('static', filename='img/' + p.image) }}" alt="{{ p.name }} — {{ p.fabric }}" loading="lazy">
-      {% else %}
-        <svg viewBox="0 0 130 130" style="color:{{ p.color }}; stroke:{{ p.color }};" aria-hidden="true">
-          {{ m.icon_path(p.icon) }}
-        </svg>
-      {% endif %}
+      {{ m.image_gallery(p) }}
     </div>
 
     <div class="pd-info">
@@ -38,7 +32,7 @@
       </div>
 
       <div class="price-note">
-        Pricing depends on fabric, fit, and finishing details — we'll confirm the exact cost during your free home measurement visit.
+        Pricing depends on fabric, fit, and finishing details — we'll confirm the exact cost during your studio consultation.
       </div>
 
       <div style="display:flex; gap:14px; flex-wrap:wrap;">

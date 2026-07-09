@@ -1,34 +1,306 @@
 {% extends "base.html" %}
 
-{% block title %}About — {{ site_name }} | Doorstep Tailoring in {{ business.city }}{% endblock %}
-{% block meta_description %}Learn how {{ site_name }} brings measurement, fitting, and delivery to your door across {{ business.city }}.{% endblock %}
+{% block title %}About — {{ site_name }} | Handcrafted Bespoke Dresses in {{ business.city }}{% endblock %}
+{% block meta_description %}Meet Seema Kapoor. Made-to-measure dresses handcrafted in {{ business.city }} with traditional techniques and precise patternmaking.{% endblock %}
 
 {% block content %}
 <div class="page-header wrap">
   <div class="breadcrumb"><a href="{{ url_for('home') }}">Home</a> / About</div>
-  <h1>About {{ site_name }}</h1>
+  <h1>About SilaiGhar</h1>
 </div>
 
-<section>
-  <div class="wrap" style="max-width:760px;">
-    <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
-      {{ site_name }} is a doorstep tailoring studio serving {{ business.city }}, {{ business.state }}. We bring
-      the measuring tape to you, stitch every design to your exact fit, and deliver it back to your door —
-      no shop visit required.
-    </p>
-    <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-bottom:20px;">
-      Every design on this site starts the same way: a free home measurement visit, a fabric choice
-      from our library or your own material, and one trial fitting for anything structured. Pricing is
-      confirmed during that visit, based on fabric and finishing.
-    </p>
-    <p style="color:var(--ink-soft); font-size:1.05rem; line-height:1.7; margin-bottom:32px;">
-      We currently cover {{ business.areas_served[:6]|join(', ') }} and other localities across
-      {{ business.city }} — see the full list on our <a href="{{ url_for('gurugram_hub') }}">Gurugram service areas</a> page.
-    </p>
-    <div style="display:flex; gap:14px; flex-wrap:wrap;">
-      <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface">Book a measurement</a>
-      <a href="tel:{{ business.phone_tel }}" class="btn btn-outline ripple-surface">Call {{ business.phone_display }}</a>
+<!-- Designer Introduction Section -->
+<section style="background:var(--sect-2); color:var(--sect-2-ink); padding:60px 0;">
+  <div class="wrap" style="max-width:900px;">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;">
+      <div>
+        <h2 style="font-size:2rem; margin-bottom:20px; line-height:1.2;">
+          Handcrafted, Made-to-Measure Dresses
+        </h2>
+        <p style="font-size:1.1rem; line-height:1.8; margin-bottom:24px; opacity:0.95;">
+          I'm <strong>Seema Kapoor</strong>, a womenswear designer who crafts made-to-measure dresses for women who value fit, comfort, and subtle elegance. Every piece is designed and handcrafted in {{ business.city }} with traditional techniques combined with modern patternmaking.
+        </p>
+        <p style="font-size:1.05rem; line-height:1.8; opacity:0.9;">
+          I create bespoke pieces—from everyday tailored dresses to evening gowns and bridal trousseaus—that celebrate your personal style and solve real fit problems.
+        </p>
+      </div>
+      <div style="background:rgba(255,255,255,0.15); border-radius:20px; padding:40px; text-align:center;">
+        <div style="font-size:3rem; font-weight:700; margin-bottom:12px;">6–10</div>
+        <div style="font-size:0.95rem; font-weight:600;">weeks from first meeting to hand-finished delivery</div>
+      </div>
     </div>
   </div>
 </section>
+
+<!-- What We Create -->
+<section style="background:linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); padding:60px 0;">
+  <div class="wrap" style="max-width:1000px;">
+    <h2 style="text-align:center; font-size:1.8rem; margin-bottom:48px; color:white;">What I Create</h2>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:28px;">
+      <div style="background:rgba(255,255,255,0.95); border-radius:16px; padding:32px; box-shadow:var(--e1); text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:16px;">👰</div>
+        <h3 style="font-weight:700; margin-bottom:12px; background:linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Bespoke Wedding Gowns</h3>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Custom-drafted gowns with your exact measurements and personal style preferences.
+        </p>
+      </div>
+      <div style="background:rgba(255,255,255,0.95); border-radius:16px; padding:32px; box-shadow:var(--e1); text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:16px;">✨</div>
+        <h3 style="font-weight:700; margin-bottom:12px; background:linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Evening Wear</h3>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Hand-finished, flattering pieces perfect for weddings, celebrations, and special occasions.
+        </p>
+      </div>
+      <div style="background:rgba(255,255,255,0.95); border-radius:16px; padding:32px; box-shadow:var(--e1); text-align:center;">
+        <div style="font-size:2.5rem; margin-bottom:16px;">👗</div>
+        <h3 style="font-weight:700; margin-bottom:12px; background:linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">Everyday Tailored Wear</h3>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Day dresses, blouses, and suits crafted to fit your body and lifestyle perfectly.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The Process -->
+<section style="background:var(--bg); padding:60px 0;">
+  <div class="wrap" style="max-width:900px;">
+    <h2 style="text-align:center; font-size:1.8rem; margin-bottom:48px;">The Process</h2>
+    <div style="display:grid; gap:32px;">
+      <div style="display:grid; grid-template-columns:80px 1fr; gap:24px;">
+        <div style="background:var(--purple); color:white; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; flex-shrink:0;">1</div>
+        <div>
+          <h3 style="font-weight:700; margin-bottom:8px; font-size:1.1rem;">Studio Consultation</h3>
+          <p style="color:var(--ink-soft); line-height:1.6;">
+            Visit our studio for a personal consultation. We take precise measurements, discuss your style preferences, and answer all your questions.
+          </p>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:80px 1fr; gap:24px;">
+        <div style="background:var(--purple); color:white; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; flex-shrink:0;">2</div>
+        <div>
+          <h3 style="font-weight:700; margin-bottom:8px; font-size:1.1rem;">Fabric Selection & Pricing</h3>
+          <p style="color:var(--ink-soft); line-height:1.6;">
+            Choose from our library of premium fabrics (silk, linen, organic cotton, hand-embroidered textiles) or bring your own. Pricing is confirmed based on your selections and finishing details.
+          </p>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:80px 1fr; gap:24px;">
+        <div style="background:var(--purple); color:white; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; flex-shrink:0;">3</div>
+        <div>
+          <h3 style="font-weight:700; margin-bottom:8px; font-size:1.1rem;">Custom Pattern & Toile Fitting</h3>
+          <p style="color:var(--ink-soft); line-height:1.6;">
+            I draft a custom pattern based on your measurements and fit a trial toile (muslin sample) for structured designs. We refine the fit until it's perfect.
+          </p>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:80px 1fr; gap:24px;">
+        <div style="background:var(--purple); color:white; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; flex-shrink:0;">4</div>
+        <div>
+          <h3 style="font-weight:700; margin-bottom:8px; font-size:1.1rem;">Hand-Finished Creation</h3>
+          <p style="color:var(--ink-soft); line-height:1.6;">
+            Your dress is handcrafted with precision. Hems are finished by hand by local artisans. The result is a garment you'll wear for years.
+          </p>
+        </div>
+      </div>
+      <div style="display:grid; grid-template-columns:80px 1fr; gap:24px;">
+        <div style="background:var(--purple); color:white; width:80px; height:80px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.5rem; flex-shrink:0;">5</div>
+        <div>
+          <h3 style="font-weight:700; margin-bottom:8px; font-size:1.1rem;">Fittings & Collection</h3>
+          <p style="color:var(--ink-soft); line-height:1.6;">
+            Your finished garment is collected or fitted at our studio, with every detail reviewed together before final collection.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fabrics & Sizing -->
+<section style="background:linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); padding:60px 0;">
+  <div class="wrap" style="max-width:900px;">
+    <h2 style="text-align:center; font-size:1.8rem; margin-bottom:48px; color:white;">Premium Fabrics & Inclusive Sizing</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:48px;">
+      <div>
+        <h3 style="font-weight:700; margin-bottom:16px; font-size:1.1rem; color:white;">Fabrics</h3>
+        <ul style="list-style:none; padding:0;">
+          <li style="padding:10px 0; padding-left:28px; position:relative; color:rgba(255,255,255,0.85);">
+            <span style="position:absolute; left:0; color:#FFD700; font-weight:700;">✓</span>
+            Premium silk and silk blends
+          </li>
+          <li style="padding:10px 0; padding-left:28px; position:relative; color:rgba(255,255,255,0.85);">
+            <span style="position:absolute; left:0; color:#FFD700; font-weight:700;">✓</span>
+            Linen and linen-cotton blends
+          </li>
+          <li style="padding:10px 0; padding-left:28px; position:relative; color:rgba(255,255,255,0.85);">
+            <span style="position:absolute; left:0; color:#FFD700; font-weight:700;">✓</span>
+            Organic cotton and breathable naturals
+          </li>
+          <li style="padding:10px 0; padding-left:28px; position:relative; color:rgba(255,255,255,0.85);">
+            <span style="position:absolute; left:0; color:#FFD700; font-weight:700;">✓</span>
+            Hand-embroidered textiles and speciality fabrics
+          </li>
+          <li style="padding:10px 0; padding-left:28px; position:relative; color:rgba(255,255,255,0.85);">
+            <span style="position:absolute; left:0; color:#FFD700; font-weight:700;">✓</span>
+            Your own fabric (bring a treasured material from home)
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-weight:700; margin-bottom:16px; font-size:1.1rem; color:white;">Sizing</h3>
+        <p style="color:rgba(255,255,255,0.85); line-height:1.7; margin-bottom:16px;">
+          Size-inclusive custom blocks from XS to Size 20+. Every dress is drafted to your exact measurements, not a standard size.
+        </p>
+        <p style="color:rgba(255,255,255,0.85); line-height:1.7; margin-bottom:16px;">
+          <strong>Hand-finished hems</strong> by local artisans ensure durability and a polished look that lasts.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose SilaiGhar -->
+<section style="padding:60px 0;">
+  <div class="wrap" style="max-width:900px;">
+    <h2 style="text-align:center; font-size:1.8rem; margin-bottom:48px;">Why Choose SilaiGhar</h2>
+    <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:28px;">
+      <div style="background:var(--purple-tint); border-radius:16px; padding:28px;">
+        <div style="font-size:1.3rem; font-weight:700; color:var(--purple); margin-bottom:12px;">Perfect Fit, Guaranteed</div>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Custom patterns drafted to your exact measurements and refined with fitting sessions.
+        </p>
+      </div>
+      <div style="background:var(--purple-tint); border-radius:16px; padding:28px;">
+        <div style="font-size:1.3rem; font-weight:700; color:var(--purple); margin-bottom:12px;">Studio Visit Service</div>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Customers visit our studio for measurements, consultations, and fittings in a comfortable, personalised setting.
+        </p>
+      </div>
+      <div style="background:var(--purple-tint); border-radius:16px; padding:28px;">
+        <div style="font-size:1.3rem; font-weight:700; color:var(--purple); margin-bottom:12px;">Timeless Quality</div>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Handcrafted with traditional techniques and premium fabrics. Garments you'll wear for years.
+        </p>
+      </div>
+      <div style="background:var(--purple-tint); border-radius:16px; padding:28px;">
+        <div style="font-size:1.3rem; font-weight:700; color:var(--purple); margin-bottom:12px;">Size-Inclusive Approach</div>
+        <p style="color:var(--ink-soft); line-height:1.6; font-size:0.95rem;">
+          Blocks up to Size 20+. Every body deserves beautiful, well-fitting clothes.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Service Area & CTA -->
+<section style="background:var(--sect-6); padding:60px 0;">
+  <div class="wrap" style="max-width:900px; text-align:center;">
+    <h2 style="font-size:1.8rem; margin-bottom:24px; color:var(--ink);">Ready to Create Your Dream Dress?</h2>
+    <p style="font-size:1.05rem; line-height:1.7; margin-bottom:32px; color:var(--ink-soft);">
+      Customers visit our studio location for tailoring consultations, measurements, fittings, and final collection in {{ business.city }}. 
+      <a href="{{ url_for('gurugram_hub') }}" style="color:var(--purple); text-decoration:underline; font-weight:600;">See our full service areas →</a>
+    </p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+      <a href="{{ url_for('home') }}#order" class="btn btn-filled ripple-surface" style="background:var(--purple); color:white; font-weight:700;">Book a Free Consult</a>
+      <a href="https://wa.me/{{ business.phone_tel|replace(' ', '')|replace('-', '')|replace('+', '') }}" target="_blank" class="btn btn-outline ripple-surface" style="background:var(--purple-tint); color:var(--purple-dark); border:1px solid var(--purple-dark); font-weight:700;">Chat on WhatsApp</a>
+      <a href="tel:{{ business.phone_tel }}" class="btn btn-outline ripple-surface" style="background:var(--purple-tint); color:var(--purple-dark); border:1px solid var(--purple-dark); font-weight:700;">📞 Call Us</a>
+<!-- FAQs Section -->
+<section style="padding:60px 0; background:var(--bg);">
+  <div class="wrap" style="max-width:1200px;">
+    <!-- Decorative Header -->
+    <div style="text-align:center; margin-bottom:60px;">
+      <div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-bottom:20px;">
+        <div style="flex:1; height:2px; background:var(--purple);"></div>
+        <span style="font-size:0.9rem; color:var(--ink-soft); font-weight:600; letter-spacing:2px;">FAQs</span>
+        <div style="flex:1; height:2px; background:var(--purple);"></div>
+      </div>
+      <h2 style="text-align:center; font-size:2rem; font-weight:800; color:var(--ink); margin:0;">Frequently Asked Questions</h2>
+    </div>
+
+    <!-- FAQ Container: Sidebar + Content -->
+    <div style="display:grid; grid-template-columns:300px 1fr; gap:40px; align-items:start;">
+      
+      <!-- Left Sidebar: Category Buttons -->
+      <div style="display:grid; gap:12px; position:sticky; top:20px;">
+        {% for category, questions in faqs.items() %}
+        <button 
+          onclick="showFAQCategory({{ loop.index0 }}, this)"
+          style="
+            padding:18px 20px;
+            border:none;
+            border-radius:8px;
+            font-size:1rem;
+            font-weight:600;
+            cursor:pointer;
+            transition:all 0.3s ease;
+            text-align:left;
+            background:{% if loop.index0 == 0 %}var(--purple){% else %}var(--outline){% endif %};
+            color:{% if loop.index0 == 0 %}white{% else %}var(--ink){% endif %};
+            {% if loop.index0 != 0 %}opacity:0.7;{% endif %}
+          "
+          onmouseover="this.style.opacity='1'; this.style.transform='translateX(4px)';"
+          onmouseout="this.style.opacity='{% if loop.index0 == 0 %}1{% else %}0.7{% endif %}'; this.style.transform='translateX(0)';"
+          data-category="{{ loop.index0 }}"
+        >
+          <span style="display:block; font-size:0.85rem; opacity:0.9; color:inherit;">{{ loop.index }}.</span>
+          {{ category }}
+        </button>
+        {% endfor %}
+      </div>
+
+      <!-- Right Content: FAQ Items -->
+      <div style="display:grid; gap:16px;">
+        {% for category, questions in faqs.items() %}
+        <div 
+          class="faq-category-group"
+          data-category="{{ loop.index0 }}"
+          style="display:{% if loop.index0 == 0 %}block{% else %}none{% endif %};"
+        >
+          {% for question, answer in questions %}
+          <details style="background:var(--surface); border:1px solid var(--outline); border-radius:12px; padding:0; overflow:hidden; margin-bottom:12px;">
+            <summary style="padding:18px 22px; font-weight:600; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:12px; list-style:none; user-select:none;">
+              <span>{{ question }}</span>
+              <span style="font-size:1.3rem; color:var(--purple); flex-shrink:0;">+</span>
+            </summary>
+            <details-content style="display:block;">
+              <p style="padding:0 22px 20px 22px; color:var(--ink-soft); line-height:1.7; border-top:1px solid var(--outline);">{{ answer }}</p>
+            </details-content>
+          </details>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+function showFAQCategory(categoryIdx, buttonEl) {
+  // Hide all category groups
+  document.querySelectorAll('.faq-category-group').forEach(group => {
+    group.style.display = 'none';
+  });
+  
+  // Show selected category
+  document.querySelector(`.faq-category-group[data-category="${categoryIdx}"]`).style.display = 'block';
+  
+  // Update button styles
+  document.querySelectorAll('[data-category]').forEach(btn => {
+    btn.style.background = 'var(--outline)';
+    btn.style.color = 'var(--ink)';
+    btn.style.opacity = '0.7';
+  });
+  buttonEl.style.background = 'var(--purple)';
+  buttonEl.style.color = 'white';
+  buttonEl.style.opacity = '1';
+}
+
+document.querySelectorAll('details').forEach(detail => {
+  detail.addEventListener('toggle', function() {
+    const span = this.querySelector('summary span:last-child');
+    span.textContent = this.open ? '−' : '+';
+  });
+});
+</script>
 {% endblock %}
