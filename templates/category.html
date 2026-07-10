@@ -8,6 +8,17 @@
 <div class="page-header wrap">
   <div class="breadcrumb"><a href="{{ url_for('home') }}">Home</a> / {{ label }}</div>
   <h1>{{ label }}</h1>
+  {% if slug == 'products' %}
+  <form method="get" action="{{ url_for('products_page') }}" style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+    <label for="category" style="font-weight:600;">Filter by category</label>
+    <select id="category" name="category" onchange="this.form.submit()" style="min-width:220px; padding:10px 12px; border:1px solid var(--border); border-radius:999px; background:#fff;">
+      <option value="">All categories</option>
+      {% for slug_key, label_key in nav_categories.items() %}
+        <option value="{{ slug_key }}" {% if selected_category == slug_key %}selected{% endif %}>{{ label_key }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  {% endif %}
   <p style="color:var(--ink-soft); margin-top:8px;">{{ items|length }} design{{ 's' if items|length != 1 else '' }} in this collection.
     {% if slug in nav_categories %}Looking for {{ label }} near you? See <a href="{{ url_for('gurugram_category', slug=slug) }}">{{ label }} in {{ business.city }}</a>.{% endif %}
   </p>

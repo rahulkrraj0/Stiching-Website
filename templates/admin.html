@@ -188,6 +188,53 @@
       </div>
     </section>
 
+    <section id="admin-reels" class="admin-section">
+      <div class="section-head">
+        <h2>Reels</h2>
+        <p>Upload or remove the homepage and Stitch the Look reel video.</p>
+      </div>
+      <div class="admin-grid admin-grid--offers">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Upload reel</h3>
+            <p class="admin-card-copy">Choose a video file to replace the current reel shown on the site.</p>
+          </div>
+          <form action="{{ url_for('admin_upload_reel') }}" method="post" enctype="multipart/form-data" class="admin-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="form-grid">
+              <input type="file" name="reel_file" accept="video/*" required />
+            </div>
+            <div class="inline-actions">
+              <button class="btn btn-filled" type="submit">Upload reel</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Current reel</h3>
+            <p class="admin-card-copy">Remove the existing reel video if you want to reset it.</p>
+          </div>
+          <ul class="admin-offer-list">
+            {% if reels.get('stitch_the_look') %}
+              {% for reel in reels.get('stitch_the_look', []) %}
+                <li>
+                  <span>{{ reel.video }}</span>
+                  <form action="{{ url_for('admin_delete_reel', reel_key='stitch_the_look') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="video" value="{{ reel.video }}">
+                    <button class="btn btn-outline btn-sm" type="submit">Delete</button>
+                  </form>
+                </li>
+              {% endfor %}
+            {% else %}
+              <li><span>No reels uploaded yet</span></li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <section id="admin-offers" class="admin-section">
       <div class="section-head">
         <h2>Offers / Ticker</h2>

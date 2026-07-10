@@ -65,18 +65,15 @@
     </a>
     <nav class="nav-links" id="navLinks">
       <a href="{{ url_for('home') }}">Home</a>
-      <div class="dropdown" id="catDropdown">
-        <button type="button" class="drop-toggle" id="catDropToggle" aria-expanded="false" aria-haspopup="true">Categories ▾</button>
+      <div class="dropdown" id="productsDropdown">
+        <a href="{{ url_for('products_page') }}" class="drop-toggle" id="productsDropToggle" aria-expanded="false" aria-haspopup="true">Products ▾</a>
         <div class="drop-menu">
           {% for slug, label in nav_categories.items() %}
             <a href="{{ url_for('category', slug=slug) }}">{{ label }}</a>
           {% endfor %}
         </div>
       </div>
-      <a href="{{ url_for('trending_page') }}">Trending</a>
-      <a href="{{ url_for('bestsellers_page') }}">Bestsellers</a>
       <a href="{{ url_for('stitch_the_look_page') }}">Stitch the Look</a>
-      <a href="{{ url_for('gurugram_hub') }}">Gurugram Service Areas</a>
       <a href="{{ url_for('about') }}">About</a>
     </nav>
     <a href="{{ url_for('home') }}#order" class="btn btn-filled ripple-surface btn-sm">Book a measurement</a>
@@ -129,6 +126,7 @@
       </div>
       <div class="foot-col">
         <h4>Shop</h4>
+        <a href="{{ url_for('products_page') }}">All Products</a>
         <a href="{{ url_for('trending_page') }}">Trending</a>
         <a href="{{ url_for('bestsellers_page') }}">Bestsellers</a>
         <a href="{{ url_for('stitch_the_look_page') }}">Stitch the Look</a>
@@ -155,11 +153,11 @@
 </footer>
 
 <div class="fab-actions">
-  <a href="https://wa.me/{{ business.whatsapp_number }}?text=Hi%20SilaiGhar%2C%20I%20want%20to%20book%20a%20measurement%20visit." target="_blank" rel="noopener noreferrer" class="fab-action whatsapp-btn ripple-surface" aria-label="Message SilaiGhar on WhatsApp">
+  <a href="https://wa.me/{{ business.whatsapp_number }}?text=Hi%20AferaStudio%2C%20I%20want%20to%20book%20a%20measurement%20visit." target="_blank" rel="noopener noreferrer" class="fab-action whatsapp-btn ripple-surface" aria-label="Message Afera Studio on WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.532 5.863L.057 23.492a.5.5 0 0 0 .625.61l5.758-1.508A11.944 11.944 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.898 9.898 0 0 1-5.031-1.376l-.36-.214-3.737.979.997-3.648-.235-.374A9.868 9.868 0 0 1 2.1 12c0-5.468 4.432-9.9 9.9-9.9S21.9 6.532 21.9 12s-4.432 9.9-9.9 9.9z"></path></svg>
     <span>WhatsApp</span>
   </a>
-  <a href="tel:{{ business.phone_tel }}" class="fab-action call-btn ripple-surface" aria-label="Call SilaiGhar">
+  <a href="tel:{{ business.phone_tel }}" class="fab-action call-btn ripple-surface" aria-label="Call Afera Studio">
     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.004 1.004 0 011.11-.21c1.21.49 2.53.76 3.88.76a1 1 0 011 1v3.5a1 1 0 01-1 1C9.16 21.44 2.56 14.84 2.56 6.5a1 1 0 011-1H7.06a1 1 0 011 1c0 1.35.26 2.67.76 3.88.14.28.07.6-.21 1.11l-2.98 2.3z" fill="currentColor"/></svg>
     <span>Call Now</span>
   </a>

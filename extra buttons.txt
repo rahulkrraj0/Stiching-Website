@@ -1,0 +1,16 @@
+        <a href="{{ url_for('home') }}#order" class="btn btn-filled pink ripple-surface enquire-btn">Enquire about this design</a>
+        <a href="{{ url_for('home') }}#order" class="btn btn-outline ripple-surface">Book a measurement</a>
+
+
+    <div class="price-note">
+        Pricing depends on fabric, fit, and finishing details — we'll confirm the exact cost during your studio consultation.
+    </div>
+
+
+
+    headders
+
+          <a href="{{ url_for('trending_page') }}">Trending</a>
+      <a href="{{ url_for('bestsellers_page') }}">Bestsellers</a>
+      <a href="{{ url_for('stitch_the_look_page') }}">Stitch the Look</a>
+      <a href="{{ url_for('gurugram_hub') }}">Gurugram Service Areas</a>

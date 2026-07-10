@@ -17,5 +17,313 @@
       "3f9a4768e83a47568cd820a93849e992_WhatsApp_Image_2026-07-07_at_5.35.42_PM.jpeg"
     ],
     "image": "9e6201399e9b4111877406e1d5fef8bd_WhatsApp_Image_2026-07-06_at_8.34.02_PM.jpeg"
+  },
+  {
+    "id": 2,
+    "name": "Lahanga",
+    "category": "lehengas",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "lehengas",
+    "desc": "Turn every occasion into a memorable celebration with this beautifully crafted Lehenga Set. Designed with fine detailing and premium-quality fabric, it offers the perfect balance of elegance, comfort, and traditional charm. Whether you're attending a wedding, festival, engagement, or family function, this outfit will make you stand out effortlessly.",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "bestsellers",
+      "best_designs"
+    ],
+    "images": [
+      "d6afcb52a1fc4accb211f6466bf4c093_aaaaaaaaaaaa_2.jpeg",
+      "42850f7c1745494ab8c7d28b7897e4bd_aaaaaaaaaaaa_1.jpeg"
+    ],
+    "image": "d6afcb52a1fc4accb211f6466bf4c093_aaaaaaaaaaaa_2.jpeg"
+  },
+  {
+    "id": 3,
+    "name": "Suite Salwar",
+    "category": "salwar-suits",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "salwar-suits",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "top10",
+      "bestsellers"
+    ],
+    "images": [
+      "85ca0ee9dde64614b95c76f2226c448a_bbbbbbbbbb_1.jpeg",
+      "ead28e8dc5c442609133df290b65f404_bbbbbbbbbb_2.jpeg"
+    ],
+    "image": "85ca0ee9dde64614b95c76f2226c448a_bbbbbbbbbb_1.jpeg"
+  },
+  {
+    "id": 4,
+    "name": "Kurtie",
+    "category": "kurtis",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "kurtis",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "best_designs"
+    ],
+    "images": [
+      "ba2f63e634fb4c14bf453ed707adedbf_products_10.jpeg"
+    ],
+    "image": "ba2f63e634fb4c14bf453ed707adedbf_products_10.jpeg"
+  },
+  {
+    "id": 5,
+    "name": "Lahanga",
+    "category": "lehengas",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "lehengas",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "stitch_the_look"
+    ],
+    "images": [
+      "d2fce4ff9bf8450395162c27e50590ba_products_1.jpeg"
+    ],
+    "image": "d2fce4ff9bf8450395162c27e50590ba_products_1.jpeg"
+  },
+  {
+    "id": 6,
+    "name": "Lehenga",
+    "category": "lehengas",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "lehengas",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "stitch_the_look",
+      "best_designs"
+    ],
+    "images": [
+      "10e4a729e5434f05a2f2e3a9c0cdf40c_products_2.jpeg"
+    ],
+    "image": "10e4a729e5434f05a2f2e3a9c0cdf40c_products_2.jpeg"
+  },
+  {
+    "id": 7,
+    "name": "Lehenga",
+    "category": "lehengas",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "lehengas",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "top10",
+      "stitch_the_look",
+      "bestsellers",
+      "best_designs"
+    ],
+    "images": [
+      "a9bb4af71824483bbee586667346c66a_products_3.jpeg"
+    ],
+    "image": "a9bb4af71824483bbee586667346c66a_products_3.jpeg"
+  },
+  {
+    "id": 8,
+    "name": "Western",
+    "category": "indo-western",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "indo-western",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "top10",
+      "stitch_the_look",
+      "bestsellers",
+      "best_designs"
+    ],
+    "images": [
+      "5db27fea17524bc98c6fa8b0ec85597a_products_4.jpeg"
+    ],
+    "image": "5db27fea17524bc98c6fa8b0ec85597a_products_4.jpeg"
+  },
+  {
+    "id": 9,
+    "name": "Western",
+    "category": "indo-western",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "indo-western",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "top10",
+      "stitch_the_look",
+      "bestsellers",
+      "best_designs"
+    ],
+    "images": [
+      "b337d4f5207543dc9b74d65a00203d84_products_7.jpeg"
+    ],
+    "image": "b337d4f5207543dc9b74d65a00203d84_products_7.jpeg"
+  },
+  {
+    "id": 10,
+    "name": "Lehenga",
+    "category": "festive-collection",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "festive-collection",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "top10",
+      "stitch_the_look"
+    ],
+    "images": [
+      "607d86b7d912486787458b797ad87777_products_5.jpeg"
+    ],
+    "image": "607d86b7d912486787458b797ad87777_products_5.jpeg"
+  },
+  {
+    "id": 11,
+    "name": "Western",
+    "category": "indo-western",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "indo-western",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "bestsellers"
+    ],
+    "images": [
+      "251c4a94c2a34c2d84ae9d3c438436e6_products_8.jpeg"
+    ],
+    "image": "251c4a94c2a34c2d84ae9d3c438436e6_products_8.jpeg"
+  },
+  {
+    "id": 12,
+    "name": "Blouse",
+    "category": "blouses-collection",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "blouses-collection",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "top10",
+      "best_designs"
+    ],
+    "images": [
+      "68a5e53718374aeb95d1b82cd776d629_Blouses.jpeg"
+    ],
+    "image": "68a5e53718374aeb95d1b82cd776d629_Blouses.jpeg"
+  },
+  {
+    "id": 13,
+    "name": "Bride",
+    "category": "bridal-collection",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "bridal-collection",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "trending",
+      "top10",
+      "best_designs"
+    ],
+    "images": [
+      "c146a81f4e6c4b5784b0c5610c8579f5_Bridal_Collection.jpeg"
+    ],
+    "image": "c146a81f4e6c4b5784b0c5610c8579f5_Bridal_Collection.jpeg"
+  },
+  {
+    "id": 14,
+    "name": "Salwar Suite",
+    "category": "salwar-suits",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "salwar-suits",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [],
+    "images": [
+      "55ef397dbd9d431abca6d9544fe6758e_Salwar_Suits.jpeg"
+    ],
+    "image": "55ef397dbd9d431abca6d9544fe6758e_Salwar_Suits.jpeg"
+  },
+  {
+    "id": 15,
+    "name": "Kurti",
+    "category": "kurtis",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "kurtis",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [],
+    "images": [
+      "955336435abc47b39a4e246d32919f9c_Kurtis.jpeg"
+    ],
+    "image": "955336435abc47b39a4e246d32919f9c_Kurtis.jpeg"
+  },
+  {
+    "id": 16,
+    "name": "Western",
+    "category": "indo-western",
+    "fabric": "",
+    "hash_number": "",
+    "color": "#6C3CE9",
+    "icon": "indo-western",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [],
+    "images": [
+      "96e05abd589f4012967d1788fe5ea76f_Indo-Western.jpeg"
+    ],
+    "image": "96e05abd589f4012967d1788fe5ea76f_Indo-Western.jpeg"
+  },
+  {
+    "id": 17,
+    "name": "Lehenga",
+    "category": "bridal-collection",
+    "fabric": "",
+    "hash_number": "#1",
+    "color": "#6C3CE9",
+    "icon": "bridal-collection",
+    "desc": "",
+    "tags": [],
+    "homepage_groups": [
+      "stitch_the_look",
+      "best_designs"
+    ],
+    "images": [
+      "2ebd059013634c2b9aa7d29f4931d538_Lehengas.jpeg"
+    ],
+    "image": "2ebd059013634c2b9aa7d29f4931d538_Lehengas.jpeg"
   }
 ]

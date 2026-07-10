@@ -1,5 +1,5 @@
 """
-SilaiGhar — multi-page Flask storefront for a Gurugram tailoring business.
+AferaStudio — multi-page Flask storefront for a Gurugram tailoring business.
 
 Setup:
   1. Copy .env.example to .env and fill in real values (SECRET_KEY, admin
@@ -63,7 +63,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
 
 logging.basicConfig(level=logging.INFO if not DEBUG else logging.DEBUG)
-logger = logging.getLogger("silaighar")
+logger = logging.getLogger("AferaStudio")
 logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
 
@@ -103,13 +103,17 @@ DATA_PATH = os.path.join(BASE_DIR, "data", "products.json")
 OFFERS_PATH = os.path.join(BASE_DIR, "data", "offers.json")
 CATEGORIES_PATH = os.path.join(BASE_DIR, "data", "categories.json")
 HERO_PATH = os.path.join(BASE_DIR, "data", "hero.json")
+REELS_PATH = os.path.join(BASE_DIR, "data", "reels.json")
 BUSINESS_PATH = os.path.join(BASE_DIR, "data", "business.json")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "img")
+REEL_UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "video")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["REEL_UPLOAD_FOLDER"] = REEL_UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(REEL_UPLOAD_FOLDER, exist_ok=True)
 
-SITE_URL = os.environ.get("SITE_URL", "https://www.silaighar.in")
+SITE_URL = os.environ.get("SITE_URL", "https://www.AferaStudio.in")
 
 
 # --------------------------------------------------------------------------
@@ -188,8 +192,58 @@ def save_hero(hero):
     return _write_json(HERO_PATH, hero)
 
 
+def _normalize_reel_entries(value):
+    if isinstance(value, list):
+        entries = []
+        for item in value:
+            if isinstance(item, dict):
+                video = item.get("video")
+                if video:
+                    entries.append({"video": video})
+            elif isinstance(item, str) and item:
+                entries.append({"video": item})
+        return entries
+    if isinstance(value, dict):
+        video = value.get("video")
+        return [{"video": video}] if video else []
+    if isinstance(value, str) and value:
+        return [{"video": value}]
+    return []
+
+
+def load_reels():
+    raw_reels = _read_json(REELS_PATH, {})
+    if not isinstance(raw_reels, dict):
+        raw_reels = {}
+    normalized = {}
+    for reel_key, value in raw_reels.items():
+        normalized[reel_key] = _normalize_reel_entries(value)
+    if not normalized.get("stitch_the_look"):
+        normalized["stitch_the_look"] = [{"video": "stitch-the-look.mp4"}]
+    return normalized
+
+
+def save_reels(reels):
+    payload = {}
+    for reel_key, entries in reels.items():
+        payload[reel_key] = [entry for entry in entries if isinstance(entry, dict) and entry.get("video")]
+    return _write_json(REELS_PATH, payload)
+
+
+def get_reel_videos(reel_key="stitch_the_look"):
+    reels = load_reels()
+    return reels.get(reel_key, [])
+
+
+def get_reel_video_path(reel_key="stitch_the_look"):
+    reels = get_reel_videos(reel_key)
+    if reels:
+        return reels[0].get("video") or "stitch-the-look.mp4"
+    return "stitch-the-look.mp4"
+
+
 def load_business():
-    return _read_json(BUSINESS_PATH, {"name": "SilaiGhar", "city": "Gurugram"})
+    return _read_json(BUSINESS_PATH, {"name": "AferaStudio", "city": "Gurugram"})
 
 
 def build_categories(products, categories):
@@ -245,23 +299,24 @@ def get_homepage_groups(product):
     return legacy_groups
 
 
-def allowed_file(filename):
+def allowed_file(filename, allowed_extensions=None):
+    extensions = allowed_extensions or ALLOWED_EXTENSIONS
     return bool(filename) and "." in filename and \
-        filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit(".", 1)[1].lower() in extensions
 
 
-def save_upload(file_storage, prefix=""):
-    """Validate and save an uploaded image. Returns the saved filename or None.
+def save_upload(file_storage, prefix="", allowed_extensions=None, validate_image=True, upload_folder=None):
+    """Validate and save an uploaded file. Returns the saved filename or None.
 
-    Validates both the extension AND (when Pillow is available) that the
-    file content is actually a decodable image, so a renamed .php file
-    can't slip through as a .jpg.
+    Validates both the extension AND (when Pillow is available and image validation
+    is requested) that the file content is actually a decodable image, so a renamed
+    .php file can't slip through as a .jpg.
     """
     if not file_storage or not file_storage.filename:
         return None
-    if not allowed_file(file_storage.filename):
+    if not allowed_file(file_storage.filename, allowed_extensions):
         return None
-    if HAS_PIL:
+    if validate_image and HAS_PIL:
         try:
             file_storage.stream.seek(0)
             Image.open(file_storage.stream).verify()
@@ -271,7 +326,8 @@ def save_upload(file_storage, prefix=""):
                             file_storage.filename)
             return None
     filename = f"{prefix}{uuid.uuid4().hex}_{secure_filename(file_storage.filename)}"
-    file_storage.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+    target_folder = upload_folder or app.config["UPLOAD_FOLDER"]
+    file_storage.save(os.path.join(target_folder, filename))
     return filename
 
 
@@ -351,11 +407,13 @@ def inject_globals():
     for slug, cat_data in categories.items():
         nav_cats[slug] = get_category_label(cat_data)
     return {
-        "site_name": "SilaiGhar",
+        "site_name": "AferaStudio",
         "nav_categories": nav_cats,
         "ticker_messages": load_offers(),
         "business": load_business(),
         "site_url": SITE_URL,
+        "reel_video_path": get_reel_video_path(),
+        "reel_videos": get_reel_videos(),
     }
 
 
@@ -381,6 +439,7 @@ def admin_dashboard():
     categories = build_categories(products, category_map)
     tag_suggestions = sorted({tag for p in products for tag in p.get("tags", [])})
     hero = load_hero()
+    reels = load_reels()
     business = load_business()
     return render_template(
         "admin.html",
@@ -388,6 +447,7 @@ def admin_dashboard():
         offers=offers,
         categories=categories,
         hero=hero,
+        reels=reels,
         tag_suggestions=tag_suggestions,
         existing_categories=category_map,
         homepage_group_options=HOMEPAGE_GROUP_OPTIONS,
@@ -636,6 +696,56 @@ def admin_delete_offer(index):
     return redirect(url_for("admin_dashboard") + "#admin-offers")
 
 
+@app.route("/admin/reel/upload", methods=["POST"])
+@login_required
+def admin_upload_reel():
+    reel_file = request.files.get("reel_file")
+    if not reel_file or not reel_file.filename:
+        flash("Please choose a video file to upload.", "error")
+        return redirect(url_for("admin_dashboard") + "#admin-reels")
+
+    saved_filename = save_upload(
+        reel_file,
+        prefix="reel_",
+        allowed_extensions={"mp4", "mov", "webm", "mkv", "avi", "gif"},
+        validate_image=False,
+        upload_folder=app.config["REEL_UPLOAD_FOLDER"],
+    )
+    if not saved_filename:
+        flash("Please upload a supported reel file (MP4, MOV, WEBM, MKV, AVI, or GIF).", "error")
+        return redirect(url_for("admin_dashboard") + "#admin-reels")
+
+    reels = load_reels()
+    reel_entries = reels.setdefault("stitch_the_look", [])
+    reel_entries.append({"video": saved_filename})
+    save_reels(reels)
+    flash("Reel uploaded successfully.", "success")
+    return redirect(url_for("admin_dashboard") + "#admin-reels")
+
+
+@app.route("/admin/reel/delete/<reel_key>", methods=["POST"])
+@login_required
+def admin_delete_reel(reel_key):
+    reels = load_reels()
+    reel_entries = reels.get(reel_key, [])
+    video_to_remove = request.form.get("video", "")
+
+    remaining = []
+    for entry in reel_entries:
+        video = entry.get("video", "") if isinstance(entry, dict) else ""
+        if video == video_to_remove:
+            file_path = os.path.join(app.config["REEL_UPLOAD_FOLDER"], video)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            continue
+        remaining.append(entry)
+
+    reels[reel_key] = remaining
+    save_reels(reels)
+    flash("Reel removed.", "success")
+    return redirect(url_for("admin_dashboard") + "#admin-reels")
+
+
 @app.route("/admin/hero/update", methods=["POST"])
 @login_required
 def admin_update_hero():
@@ -668,6 +778,7 @@ def home():
     categories = build_categories(products, category_map)
     featured_categories = random.sample(categories, k=min(6, len(categories))) if categories else []
     hero = load_hero()
+    reel_video_path = get_reel_video_path()
     return render_template(
         "index.html",
         trending=trending,
@@ -677,6 +788,7 @@ def home():
         top10=top10,
         categories=featured_categories,
         hero=hero,
+        reel_video_path=reel_video_path,
     )
 
 
@@ -701,6 +813,25 @@ def product(product_id):
     return render_template("product.html", p=match, related=related)
 
 
+@app.route("/products")
+def products_page():
+    products = load_products()
+    selected_category = request.args.get("category", "").strip()
+    items = sorted(
+        products,
+        key=lambda p: (p.get("category", ""), str(p.get("name", "")).lower(), p.get("id", 0)),
+    )
+    if selected_category:
+        items = [p for p in items if p.get("category") == selected_category]
+    return render_template(
+        "category.html",
+        label="Products",
+        slug="products",
+        items=items,
+        selected_category=selected_category,
+    )
+
+
 @app.route("/trending")
 def trending_page():
     products = load_products()
@@ -719,7 +850,8 @@ def bestsellers_page():
 def stitch_the_look_page():
     products = load_products()
     items = [p for p in products if "look" in p.get("tags", [])]
-    return render_template("look.html", items=items)
+    reel_videos = get_reel_videos()
+    return render_template("look.html", items=items, reel_videos=reel_videos)
 
 
 @app.route("/about")
@@ -908,10 +1040,14 @@ def server_error(e):
 
 
 if __name__ == "__main__":
+    host = os.environ.get("HOST", "0.0.0.0")
+    port = int(os.environ.get("PORT", 5000))
+    print(f"Starting AferaStudio on http://127.0.0.1:{port}")
+    print(f"Local URL: http://localhost:{port}")
     app.run(
         debug=DEBUG,
-        host=os.environ.get("HOST", "0.0.0.0"),
-        port=int(os.environ.get("PORT", 5000)),
+        host=host,
+        port=port,
         use_reloader=False,
         threaded=True,
     )
