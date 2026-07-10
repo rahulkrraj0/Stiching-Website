@@ -242,7 +242,6 @@
           onmouseout="this.style.opacity='{% if loop.index0 == 0 %}1{% else %}0.7{% endif %}'; this.style.transform='translateX(0)';"
           data-category="{{ loop.index0 }}"
         >
-          <span style="display:block; font-size:0.85rem; opacity:0.9; color:inherit;">{{ loop.index }}.</span>
           {{ category }}
         </button>
         {% endfor %}
